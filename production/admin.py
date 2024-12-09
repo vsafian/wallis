@@ -10,7 +10,7 @@ class WorkerAdmin(UserAdmin):
 
     fieldsets = UserAdmin.fieldsets + (
         (
-            "Work information", {
+            "Work info", {
                 "fields": ('workplace', )
             }
 
@@ -25,7 +25,7 @@ class WorkerAdmin(UserAdmin):
 
     add_fieldsets = UserAdmin.add_fieldsets + (
         (
-            "Personal Information", {
+            "Personal info", {
             'fields': ('first_name', 'last_name')
             }
         ),
@@ -35,7 +35,7 @@ class WorkerAdmin(UserAdmin):
             }
         ),
         (
-            "Work information", {
+            "Work info", {
                 'fields': ('workplace', )
             }
         )
