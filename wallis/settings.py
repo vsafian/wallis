@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     "debug_toolbar",
     "crispy_forms",
     "crispy_bootstrap4",
-
+    "production",
 ]
 
 MIDDLEWARE = [
@@ -144,3 +144,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap4"
 
 CRISPY_TEMPLATE_PACK = "bootstrap4"
+
+# User
+AUTH_USER_MODEL = "production.Worker"
+
+# Redirect
+LOGIN_REDIRECT_URL = "/"
