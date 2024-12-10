@@ -1,5 +1,6 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.urls import reverse
 
 
 class Workplace(models.Model):
@@ -20,3 +21,9 @@ class Worker(AbstractUser):
 
     def __str__(self):
         return f"{self.username}"
+
+    def get_absolute_url(self) -> str:
+        return reverse(
+            "production:worker-detail",
+            kwargs={"pk": self.pk}
+        )
