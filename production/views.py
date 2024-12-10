@@ -7,4 +7,8 @@ def index(request: HttpRequest) -> HttpResponse:
     """View function for the home page of the site."""
     context = {
     }
-    return render(request, "production/index.html", context=context)
+    return render(
+        request,
+        "production/index.html",
+        context=context
+    )
