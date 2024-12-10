@@ -39,14 +39,16 @@
 
   <!-- Specific Page CSS goes HERE  -->
   {% block stylesheets %}{% endblock stylesheets %}
-
 </head>
-
 <body class="">
 <div class="wrapper ">
-  {% include 'includes/sidebar.html' %}
+  {% block sidebar %}
+    {% include 'includes/sidebar.html' %}
+  {% endblock %}
   <div class="main-panel">
-    {% include 'includes/navigation.html' %}
+    {% block navigation %}
+      {% include 'includes/navigation.html' %}
+    {% endblock %}
     <!-- End Navbar -->
     <div class="content">
       <div class="container-fluid">

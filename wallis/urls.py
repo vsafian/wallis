@@ -20,6 +20,10 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+
+    # bild-in django authorization
+    path("accounts/", include("django.contrib.auth.urls")),
+
     path("", include("production.urls", namespace="production")),
 
 ] + debug_toolbar_urls()

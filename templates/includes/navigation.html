@@ -20,7 +20,12 @@
             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownProfile">
               <a class="dropdown-item" href="/page-user.html">Profile</a>
               <div class="dropdown-divider"></div>
-              <a class="dropdown-item" href="#">Log out</a>
+              <form method="post" action="{% url 'logout' %}">
+                {% csrf_token %}
+                <label class="dropdown-item dropdown-form-label">
+                  <input class="dropdown-form-input p-0" type="submit" value="Logout">
+                </label>
+              </form>
             </div>
           </li>
           <li class="nav-item dropdown">
