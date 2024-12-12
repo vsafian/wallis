@@ -6,7 +6,9 @@ from production.models import Worker, Workplace
 
 @admin.register(Worker)
 class WorkerAdmin(UserAdmin):
-    list_display = UserAdmin.list_display + ('phone_number', )
+    list_display = UserAdmin.list_display + (
+        'phone_number', 'workplace'
+    )
 
     fieldsets = UserAdmin.fieldsets + (
         (
