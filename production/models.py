@@ -24,7 +24,8 @@ class Worker(AbstractUser):
                 ),
                 code="invalid_number",
             ),
-        ]
+        ],
+        unique=True
     )
     workplace = models.ForeignKey(
         Workplace,
