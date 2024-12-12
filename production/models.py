@@ -34,6 +34,9 @@ class Worker(AbstractUser):
         related_name='workers',
     )
 
+    class Meta:
+        ordering = ['-date_joined']
+
     def __str__(self):
         return f"{self.username}"
 
