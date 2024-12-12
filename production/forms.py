@@ -11,5 +11,10 @@ class WorkerCreateForm(UserCreationForm):
             "phone_number",
         )
 
+class WorkerPhoneNumberForm(forms.ModelForm):
+    class Meta:
+        model = Worker
+        fields = ("phone_number",)
+
 
 

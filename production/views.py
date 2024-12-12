@@ -36,3 +36,8 @@ class WorkerDeleteView(LoginRequiredMixin, DeleteViewMixin):
     model = Worker
     template_name = "production/worker_confirm_delete.html"
     success_url = reverse_lazy("production:index")
+
+class WorkerPhoneView(LoginRequiredMixin, generic.UpdateView):
+    model = Worker
+    form_class = WorkerPhoneNumberForm
+    template_name = "production/worker_phone_number_form.html"
