@@ -6,6 +6,7 @@ from django.urls import reverse_lazy
 from django.views import generic
 
 from production.forms import WorkerCreateForm
+from production.mixins import DeleteViewMixin
 from production.models import Worker
 
 
@@ -31,7 +32,7 @@ class WorkerCreateView(LoginRequiredMixin, generic.CreateView):
     form_class = WorkerCreateForm
 
 
-class WorkerDeleteView(LoginRequiredMixin, generic.DeleteView):
+class WorkerDeleteView(LoginRequiredMixin, DeleteViewMixin):
     model = Worker
     template_name = "production/worker_confirm_delete.html"
     success_url = reverse_lazy("production:index")
