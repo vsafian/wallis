@@ -1,6 +1,6 @@
 from django.urls import path
 
-from production.views import index, WorkerDetailView, WorkerCreateView, WorkerDeleteView
+from production.views import index, WorkerDetailView, WorkerCreateView, WorkerDeleteView, WorkerPhoneView
 
 urlpatterns = [
     path("", index, name="index"),
@@ -9,6 +9,12 @@ urlpatterns = [
         "workers/<int:pk>/",
         WorkerDetailView.as_view(),
         name="worker-detail",
+    ),
+
+    path(
+        "workers/<int:pk>/phone/",
+        WorkerPhoneView.as_view(),
+        name="worker-phone",
     ),
 
     path("workers/create/",
