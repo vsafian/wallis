@@ -22,9 +22,9 @@ class DeleteViewMixin(generic.DeleteView):
             return super().post(request, *args, **kwargs)
 
 
-class AbsoluteUrlMixin:
+class ModelAbsoluteUrlMixin:
     """
-    AbsoluteUrlMixin:
+    ModelAbsoluteUrlMixin:
     - Provides a reusable implementation of the `get_absolute_url` method.
     - Generates an absolute URL for an object based on a predefined view name.
 
