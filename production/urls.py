@@ -6,7 +6,7 @@ from production.views import (
     WorkerCreateView,
     WorkerDeleteView,
     WorkerPhoneView,
-    WorkerListView
+    WorkerListView, WorkplaceListView, WorkplaceCreateView
 )
 
 urlpatterns = [
@@ -38,7 +38,20 @@ urlpatterns = [
         "workers/",
         WorkerListView.as_view(),
         name="worker-list",
+    ),
+
+    path(
+        "workplaces/",
+        WorkplaceListView.as_view(),
+        name="workplace-list",
+    ),
+
+    path(
+        "workplaces/create/",
+        WorkplaceCreateView.as_view(),
+        name="workplace-create"
     )
+
 ]
 
 app_name = "production"
