@@ -49,6 +49,12 @@
         </a>
       </li>
       {% if user.is_staff %}
+        <li class="nav-item {% if 'ui-tables' in segment %} active {% endif %}">
+          <a class="nav-link" href="{% url 'production:worker-list' %}">
+            <i class="material-icons">library_books</i>
+            <p>Workers</p>
+          </a>
+        </li>
       {% endif %}
     </ul>
   </div>

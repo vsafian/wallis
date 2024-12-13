@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block content %}
+  {% if worker_list %}
+    <div class="text-center">
+      <h2>Search string</h2>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-header card-header-tabs card-header-primary">
+            <div class="nav-tabs-navigation">
+              <div class="nav-tabs-wrapper">
+                <div class="d-flex align-items-center justify-content-between">
+                  <h1 class="nav-tabs-title">Workers:</h1>
+                  <ul class="nav nav-tabs" data-tabs="tabs">
+                    <li class="nav-item">
+                      <a class="nav-link active" href="{% url 'production:worker-create' %}">
+                        <i class="material-icons">add</i>
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive h4">
+              <table class="table">
+                <thead class=" text-primary">
+                <tr>
+                  <th>ID</th>
+                  <th>Username</th>
+                  <th>First name</th>
+                  <th>Last name</th>
+                  <th>Phone number</th>
+                  <th>Workplace</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for worker in worker_list %}
+                  <tr>
+                    <td>{{ worker.id }}</td>
+                    <td><a href="{{ worker.get_absolute_url }}">{{ worker.username }} {% if user == worker %}
+                      (Me){% endif %}</a></td>
+                    <td>{{ worker.first_name }}</td>
+                    <td>{{ worker.last_name }}</td>
+                    <td>{{ worker.phone_number }}</td>
+                    <td>{{ worker.workplace }}</td>
+                  </tr>
+                {% endfor %}
+                </tbody>
+              </table>
+              {% include "includes/pagination.html" %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% else %}
+    <h2 class="text-primary">There are no workers in the service now!.</h2>
+  {% endif %}
+{% endblock %}

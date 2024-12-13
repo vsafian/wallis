@@ -7,8 +7,10 @@
     </h1>
     {% if worker.id == user.id or user.is_staff %}
       <a class="btn btn-danger btn-sm"
-         href="{% url 'production:worker-delete' pk=worker.id %}">
-        Delete Profile
+         href="{% url 'production:worker-delete' pk=worker.pk %}"
+         title="Delete Profile"
+      >
+        <i class="material-icons">delete</i>
       </a>
     {% endif %}
   </div>
