@@ -2,17 +2,18 @@ from django.contrib.auth.models import AbstractUser
 from django.core.validators import RegexValidator
 from django.db import models
 
-from production.mixins import AbsoluteUrlMixin
+from production.mixins import ModelAbsoluteUrlMixin
 
 
-class Workplace(models.Model):
+class Workplace(models.Model, ModelAbsoluteUrlMixin):
     name = models.CharField(max_length=100)
+    view_name = "production:workplace-detail"
 
     def __str__(self):
         return self.name
 
 
-class Worker(AbstractUser, AbsoluteUrlMixin):
+class Worker(AbstractUser, ModelAbsoluteUrlMixin):
     phone_number = models.CharField(
         max_length=13, null=True, blank=True,
         validators=[

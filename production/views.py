@@ -86,3 +86,10 @@ class WorkplaceCreateView(
     template_name = "production/workplace_form.html"
     success_url = reverse_lazy("production:workplace-list")
 
+
+class WorkplaceDetailView(
+    LoginRequiredMixin,
+    generic.DetailView
+):
+    model = Workplace
+    queryset = Workplace.objects.prefetch_related("workers").all()
