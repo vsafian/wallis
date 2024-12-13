@@ -38,7 +38,8 @@ class AbsoluteUrlMixin:
     def get_absolute_url(self) -> str:
         if not self.view_name:
             raise ImproperlyConfigured(
-                f"{self.__class__.__name__} must define 'view_name' attribute."
+                f"{self.__class__.__name__} "
+                f"must define 'view_name' attribute."
             )
         return reverse(
             viewname=self.view_name,
@@ -47,3 +48,15 @@ class AbsoluteUrlMixin:
             }
         )
 
+
+class ViewSuccessUrlMixin:
+    """
+    ViewSuccessUrlMixin:
+    - Provides a reusable implementation of the `get_success_url` method.
+    """
+
+    def get_success_url(self):
+        obj = self.get_object()
+        return (
+            obj.get_absolute_url()
+        )
