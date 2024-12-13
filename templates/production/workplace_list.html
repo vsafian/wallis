@@ -14,7 +14,7 @@
                   <h1 class="nav-tabs-title">Workplaces:</h1>
                   <ul class="nav nav-tabs" data-tabs="tabs">
                     <li class="nav-item">
-                      <a class="nav-link active" 
+                      <a class="nav-link active"
                          href="{% url 'production:workplace-create' %}"
                          title="Add workplace"
                       >
@@ -34,14 +34,22 @@
                   <th>ID</th>
                   <th>Name</th>
                   <th>Number of workers</th>
+                  <th>Number of printers</th>
                 </tr>
                 </thead>
                 <tbody>
                 {% for workplace in workplace_list %}
                   <tr>
                     <td>{{ workplace.id }}</td>
-                    <td>{{ workplace.name }}</td>
+                    <td>
+                      <a class="page-link text-danger"
+                         href="{% url 'production:workplace-detail' pk=workplace.id %}"
+                      >
+                        {{ workplace.name }}
+                      </a>
+                    </td>
                     <td>{{ workplace.workers.count }}</td>
+                    <td>0</td>
                   </tr>
                 {% endfor %}
                 </tbody>
