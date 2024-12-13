@@ -1,7 +1,8 @@
 from django.contrib.auth.models import AbstractUser
 from django.core.validators import RegexValidator
 from django.db import models
-from django.urls import reverse
+
+from production.mixins import AbsoluteUrlMixin
 
 
 class Workplace(models.Model):
@@ -11,7 +12,7 @@ class Workplace(models.Model):
         return self.name
 
 
-class Worker(AbstractUser):
+class Worker(AbstractUser, AbsoluteUrlMixin):
     phone_number = models.CharField(
         max_length=13, null=True, blank=True,
         validators=[
@@ -33,15 +34,10 @@ class Worker(AbstractUser):
         null=True, blank=True,
         related_name='workers',
     )
+    view_name = "production:worker-detail"
 
     class Meta:
         ordering = ['-date_joined']
 
     def __str__(self):
         return f"{self.username}"
-
-    def get_absolute_url(self) -> str:
-        return reverse(
-            "production:worker-detail",
-            kwargs={"pk": self.pk}
-        )
