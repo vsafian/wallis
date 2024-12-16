@@ -42,3 +42,24 @@ class Worker(AbstractUser, ModelAbsoluteUrlMixin):
 
     def __str__(self):
         return f"{self.username}"
+
+
+class Material(
+    models.Model,
+    ModelAbsoluteUrlMixin,
+):
+    name = models.CharField(
+        max_length=100,
+        unique=True
+    )
+    type = models.CharField(max_length=100)
+    roll_width = models.FloatField()
+    winding = models.IntegerField()
+    density = models.IntegerField()
+    view_name = "production:material-detail"
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        ordering = ['type']

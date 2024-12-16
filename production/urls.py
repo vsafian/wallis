@@ -1,5 +1,6 @@
 from django.urls import path
 
+from production.models import Material
 from production.views import (
     index,
     WorkerDetailView,
@@ -9,7 +10,7 @@ from production.views import (
     WorkerListView,
     WorkplaceListView,
     WorkplaceCreateView,
-    WorkplaceDetailView
+    WorkplaceDetailView, MaterialListView
 )
 
 urlpatterns = [
@@ -62,6 +63,11 @@ urlpatterns = [
     ),
 
 
+    path(
+        "materials/",
+        MaterialListView.as_view(),
+        name="material-list",
+    )
 
 ]
 

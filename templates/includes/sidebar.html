@@ -42,6 +42,9 @@
           <p>Home</p>
         </a>
       </li>
+    </ul>
+    <hr>
+    <ul class="nav">
       <li class="nav-item {% if 'ui-tables' in segment %} active {% endif %}">
         <a class="nav-link" href="/ui-tables.html">
           <i class="material-icons">library_books</i>
@@ -59,6 +62,12 @@
           <a class="nav-link" href="{% url 'production:workplace-list' %}">
             <i class="material-icons">library_books</i>
             <p>Workplaces</p>
+          </a>
+        </li>
+        <li class="nav-item {% if 'ui-tables' in segment %} active {% endif %}">
+          <a class="nav-link" href="{% url 'production:material-list' %}">
+            <i class="material-icons">library_books</i>
+            <p>Materials</p>
           </a>
         </li>
       {% endif %}

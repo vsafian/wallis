@@ -17,7 +17,7 @@ from production.mixins import (
     ViewSuccessUrlMixin
 )
 from production.models import (
-    Worker, Workplace
+    Worker, Workplace, Material
 )
 
 
@@ -33,7 +33,10 @@ def index(request: HttpRequest) -> HttpResponse:
     )
 
 
-class WorkerDetailView(LoginRequiredMixin, generic.DetailView):
+class WorkerDetailView(
+    LoginRequiredMixin,
+    generic.DetailView
+):
     model = Worker
 
 
@@ -65,13 +68,19 @@ class WorkerPhoneView(
     template_name = "production/worker_phone_number_form.html"
 
 
-class WorkerListView(LoginRequiredMixin, generic.ListView):
+class WorkerListView(
+    LoginRequiredMixin,
+    generic.ListView
+):
     model = Worker
     paginate_by = 10
     queryset = Worker.objects.select_related("workplace").all()
 
 
-class WorkplaceListView(LoginRequiredMixin, generic.ListView):
+class WorkplaceListView(
+    LoginRequiredMixin,
+    generic.ListView
+):
     model = Workplace
     paginate_by = 10
     queryset = Workplace.objects.prefetch_related("workers").all()
@@ -93,3 +102,18 @@ class WorkplaceDetailView(
 ):
     model = Workplace
     queryset = Workplace.objects.prefetch_related("workers").all()
+
+
+class MaterialListView(
+    LoginRequiredMixin,
+    generic.ListView
+):
+    model = Material
+    paginate_by = 10
+
+
+class MaterialDetailView(
+    LoginRequiredMixin,
+    generic.DetailView
+):
+    model = Material
