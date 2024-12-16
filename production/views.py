@@ -17,7 +17,7 @@ from production.mixins import (
     ViewSuccessUrlMixin
 )
 from production.models import (
-    Worker, Workplace, Material
+    Worker, Workplace, Material, Printer
 )
 
 
@@ -74,7 +74,9 @@ class WorkerListView(
 ):
     model = Worker
     paginate_by = 10
-    queryset = Worker.objects.select_related("workplace").all()
+    queryset = (
+        Worker.objects.select_related("workplace").all()
+    )
 
 
 class WorkplaceListView(
@@ -83,7 +85,9 @@ class WorkplaceListView(
 ):
     model = Workplace
     paginate_by = 10
-    queryset = Workplace.objects.prefetch_related("workers").all()
+    queryset = (
+        Workplace.objects.prefetch_related("workers").all()
+    )
 
 
 class WorkplaceCreateView(
@@ -101,7 +105,9 @@ class WorkplaceDetailView(
     generic.DetailView
 ):
     model = Workplace
-    queryset = Workplace.objects.prefetch_related("workers").all()
+    queryset = (
+        Workplace.objects.prefetch_related("workers").all()
+    )
 
 
 class MaterialListView(
@@ -117,3 +123,21 @@ class MaterialDetailView(
     generic.DetailView
 ):
     model = Material
+
+
+class PrinterListView(
+    LoginRequiredMixin,
+    generic.ListView
+):
+    model = Printer
+    paginate_by = 10
+    queryset = (
+        Printer.objects.prefetch_related("materials").all()
+    )
+
+
+class PrinterDetailView(
+    LoginRequiredMixin,
+    generic.DetailView
+):
+    model = Printer

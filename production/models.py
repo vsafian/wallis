@@ -63,3 +63,28 @@ class Material(
 
     class Meta:
         ordering = ['type']
+
+
+class Printer(
+    models.Model,
+    ModelAbsoluteUrlMixin,
+):
+    model = models.CharField(
+        max_length=100, unique=False
+    )
+    materials = models.ManyToManyField(
+        Material,
+        related_name='printers'
+    )
+    workplace = models.ForeignKey(
+        Workplace, related_name='printers',
+        on_delete=models.SET_NULL,
+        null=True, blank=True
+    )
+    view_name = "production:printer-detail"
+
+    class Meta:
+        ordering = ['model']
+
+    def __str__(self):
+        return f"({self.model} | Workplace: {self.workplace})"
