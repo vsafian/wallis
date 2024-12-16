@@ -20,7 +20,8 @@ class WorkerPhoneNumberForm(forms.ModelForm):
         fields = ("phone_number",)
 
 
-class WorkplaceForm(forms.ModelForm):
+class WorkplaceCreateForm(forms.ModelForm):
     class Meta:
         model = Workplace
         fields = "__all__"
+
