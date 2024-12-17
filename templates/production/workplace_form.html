@@ -1,6 +1,5 @@
 {% extends "base.html" %}
-{% load crispy_forms_filters %}
 {% block content %}
   <h1>{{ object|yesno:"Update,Register new" }} workplace</h1>
-  {% include "includes/form.html" %}
+  {% include "includes/as_p_form.html" %}
 {% endblock %}

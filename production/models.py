@@ -41,7 +41,7 @@ class Worker(AbstractUser, ModelAbsoluteUrlMixin):
         ordering = ['-date_joined']
 
     def __str__(self):
-        return f"{self.username}"
+        return f"{self.username} | Workplace: {self.workplace}"
 
 
 class Material(

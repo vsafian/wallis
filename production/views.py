@@ -10,7 +10,7 @@ from django.views import generic
 from production.forms import (
     WorkerCreateForm,
     WorkerPhoneNumberForm,
-    WorkplaceForm
+    WorkplaceCreateForm, WorkplaceUpdateForm
 )
 from production.mixins import (
     DeleteViewMixin,
@@ -95,18 +95,30 @@ class WorkplaceCreateView(
     generic.CreateView
 ):
     model = Workplace
-    form_class = WorkplaceForm
+    form_class = WorkplaceCreateForm
     template_name = "production/workplace_form.html"
     success_url = reverse_lazy("production:workplace-list")
+
+class WorkplaceUpdateView(
+    LoginRequiredMixin,
+    ViewSuccessUrlMixin,
+    generic.UpdateView
+):
+    model = Workplace
+    form_class = WorkplaceUpdateForm
+    template_name = "production/workplace_form.html"
 
 
 class WorkplaceDetailView(
     LoginRequiredMixin,
-    generic.DetailView
+    generic.DetailView,
 ):
     model = Workplace
     queryset = (
-        Workplace.objects.prefetch_related("workers").all()
+        Workplace.objects
+        .prefetch_related("workers")
+        .prefetch_related("printers", "printers__materials")
+        .all()
     )
 
 
