@@ -3,17 +3,23 @@ from django.urls import path
 from production.models import Material
 from production.views import (
     index,
+
     WorkerDetailView,
     WorkerCreateView,
     WorkerDeleteView,
     WorkerPhoneView,
     WorkerListView,
+
     WorkplaceListView,
     WorkplaceCreateView,
     WorkplaceUpdateView,
     WorkplaceDetailView,
+
     MaterialListView,
+
     PrinterListView,
+    PrinterCreateView,
+    PrinterDetailView, PrinterDeleteView,
 )
 
 urlpatterns = [
@@ -71,13 +77,11 @@ urlpatterns = [
         name="workplace-update",
     ),
 
-
     path(
         "materials/",
         MaterialListView.as_view(),
         name="material-list",
     ),
-
 
     path(
         "printers/",
@@ -85,6 +89,22 @@ urlpatterns = [
          name="printer-list",
     ),
 
+    path(
+        "printers/<int:pk>/",
+        PrinterDetailView.as_view(),
+        name="printer-detail",
+    ),
+
+    path(
+        "printers/create/",
+        PrinterCreateView.as_view(),
+        name="printer-create",
+    ),
+    path(
+        "printers/<int:pk>/delete/",
+        PrinterDeleteView.as_view(),
+        name="printer-delete",
+    )
 ]
 
 app_name = "production"

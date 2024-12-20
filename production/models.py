@@ -69,8 +69,11 @@ class Printer(
     models.Model,
     ModelAbsoluteUrlMixin,
 ):
-    model = models.CharField(
+    name = models.CharField(
         max_length=100, unique=False
+    )
+    model = models.CharField(
+        max_length=100, unique=True
     )
     materials = models.ManyToManyField(
         Material,
@@ -84,7 +87,10 @@ class Printer(
     view_name = "production:printer-detail"
 
     class Meta:
-        ordering = ['model']
+        ordering = ['name']
 
     def __str__(self):
-        return f"({self.model} | Workplace: {self.workplace})"
+        return (
+            f"({self.name} {self.model[:4]} | "
+            f"Workplace: {self.workplace})"
+        )

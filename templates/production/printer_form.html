@@ -1,0 +1,5 @@
+{% extends "base.html" %}
+{% block content %}
+  <h1>{{ object|yesno:"Update,Register new" }} printer</h1>
+  {% include "includes/as_p_form.html" %}
+{% endblock %}

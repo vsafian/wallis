@@ -10,7 +10,9 @@ from django.views import generic
 from production.forms import (
     WorkerCreateForm,
     WorkerPhoneNumberForm,
-    WorkplaceCreateForm, WorkplaceUpdateForm
+    WorkplaceCreateForm,
+    WorkplaceUpdateForm,
+    PrinterCreateForm
 )
 from production.mixins import (
     DeleteViewMixin,
@@ -147,9 +149,26 @@ class PrinterListView(
         Printer.objects.prefetch_related("materials").all()
     )
 
+class PrinterCreateView(
+    LoginRequiredMixin,
+    ViewSuccessUrlMixin,
+    generic.CreateView
+    ):
+    model = Printer
+    form_class = PrinterCreateForm
+    template_name = "production/printer_form.html"
+
 
 class PrinterDetailView(
     LoginRequiredMixin,
     generic.DetailView
 ):
     model = Printer
+
+class PrinterDeleteView(
+    LoginRequiredMixin,
+    DeleteViewMixin
+):
+    model = Printer
+    success_url = reverse_lazy("production:printer-list")
+    template_name = "production/printer_confirm_delete.html"

@@ -3,7 +3,7 @@ from django.contrib.auth.forms import (
     UserCreationForm
 )
 from django.db import transaction
-from .models import Worker, Workplace, Printer
+from .models import Worker, Workplace, Printer, Material
 
 from .services import (
     filter_queryset_by_instance,
@@ -89,3 +89,14 @@ class WorkplaceUpdateForm(forms.ModelForm):
                 )
             instance.save()
         return instance
+
+
+class PrinterCreateForm(forms.ModelForm):
+    materials = forms.ModelMultipleChoiceField(
+        queryset=Material.objects.all(),
+        widget=forms.CheckboxSelectMultiple(),
+    )
+
+    class Meta:
+        model = Printer
+        fields = "__all__"
