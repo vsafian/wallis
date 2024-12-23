@@ -134,9 +134,14 @@ class MaterialListView(
 
 class MaterialDetailView(
     LoginRequiredMixin,
-    generic.DetailView
-):
+    generic.DetailView,
+   ):
     model = Material
+    queryset = (
+        Material.objects
+        .prefetch_related("printers", "printers__workplace")
+        .all()
+    )
 
 
 class PrinterListView(

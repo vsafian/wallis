@@ -16,10 +16,14 @@ from production.views import (
     WorkplaceDetailView,
 
     MaterialListView,
+    MaterialDetailView,
 
     PrinterListView,
     PrinterCreateView,
-    PrinterDetailView, PrinterDeleteView,
+    PrinterDetailView,
+    PrinterDeleteView,
+
+
 )
 
 urlpatterns = [
@@ -81,6 +85,11 @@ urlpatterns = [
         "materials/",
         MaterialListView.as_view(),
         name="material-list",
+    ),
+
+    path("materials/<int:pk>/",
+         MaterialDetailView.as_view(),
+         name="material-detail",
     ),
 
     path(
