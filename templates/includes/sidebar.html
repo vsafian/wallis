@@ -1,6 +1,13 @@
 <div class="sidebar" data-color="purple" data-background-color="white" data-image="/static/assets/img/sidebar-1.jpg">
   <div class="sidebar-wrapper">
     <ul class="nav">
+      <li class="nav-item {% if 'index' in segment %} active {% endif %}">
+        <a class="nav-link" href="/">
+          <i class="material-icons">dashboard</i>
+          <p>Home</p>
+        </a>
+      <hr>
+      </li>
       <li class="nav-item {% if 'page-user' in segment %} active {% endif %}">
         <a class="nav-link" href="{{ user.get_absolute_url }}">
           <i class="material-icons">person</i>
@@ -27,23 +34,14 @@
     {% if user.workplace %}
       <ul class="nav">
         <li class="nav-item {% if 'ui-tables' in segment %} active {% endif %}">
-          <a class="nav-link" href="/ui-tables.html">
+          <a class="nav-link" href="{% url 'production:workplace-detail' pk=user.workplace.id %}">
             <i class="material-icons">content_paste</i>
-            <p>Workplace</p>
+            <p>{{ user.workplace.name }}</p>
           </a>
         </li>
       </ul>
       <hr>
     {% endif %}
-    <ul class="nav">
-      <li class="nav-item {% if 'index' in segment %} active {% endif %}">
-        <a class="nav-link" href="/">
-          <i class="material-icons">dashboard</i>
-          <p>Home</p>
-        </a>
-      </li>
-    </ul>
-    <hr>
     <ul class="nav">
       <li class="nav-item {% if 'ui-tables' in segment %} active {% endif %}">
         <a class="nav-link" href="/ui-tables.html">
