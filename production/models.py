@@ -94,3 +94,7 @@ class Printer(
             f"({self.name} {self.model[:4]} | "
             f"Workplace: {self.workplace})"
         )
+
+    @property
+    def full_name(self):
+        return f"{self.name} {self.model}"

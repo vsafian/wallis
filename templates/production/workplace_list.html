@@ -49,7 +49,7 @@
                       </a>
                     </td>
                     <td>{{ workplace.workers.count }}</td>
-                    <td>0</td>
+                    <td>{{ workplace.printers.count }}</td>
                   </tr>
                 {% endfor %}
                 </tbody>
@@ -73,4 +73,6 @@
       {% endif %}
     </div>
   {% endif %}
+{% endblock %}
+{% block  pagination %}
 {% endblock %}

@@ -32,7 +32,7 @@
                 <thead class="text-warning">
                 <tr>
                   <th>ID</th>
-                  <th>Model</th>
+                  <th>Name</th>
                   <th>Number of materials</th>
                   <th>Workplace</th>
                 </tr>
@@ -45,7 +45,7 @@
                       <a class="page-link text-warning"
                          href="{% url 'production:printer-detail' pk=printer.id %}"
                       >
-                        {{ printer.model }}
+                        {{ printer.full_name }}
                       </a>
                     </td>
                     <td>{{ printer.materials.count }}</td>
