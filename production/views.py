@@ -187,9 +187,27 @@ class PrintQueueDetailView(
     model = PrintQueue
     template_name = "production/print_queue_detail.html"
 
+class PrintQueueListView(
+    LoginRequiredMixin,
+    generic.ListView
+):
+    model = PrintQueue
+    paginate_by = 10
+
 
 class OrderDetailView(
     LoginRequiredMixin,
     generic.DetailView
 ):
     model = Order
+
+
+class OrderListView(
+    LoginRequiredMixin,
+    generic.ListView
+):
+    model = Order
+    paginate_by = 10
+    queryset = (
+        Order.objects.prefetch_related("material")
+    )
