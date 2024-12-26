@@ -52,10 +52,10 @@
                     <tr>
                       <td>{{ printer.id }}</td>
                       <td>
-                        <a href="#"
+                        <a href="{% url 'production:printer-detail' pk=printer.id %}"
                            class="page-link text-primary"
                         >
-                          {{ printer }}
+                          {{ printer.full_name }}
                         </a>
                       </td>
                       <td>
@@ -84,7 +84,7 @@
                  href="#"
               >
                 <i class="material-icons">add</i>
-                Add Print Queue
+                Create Print Queue
               </a>
             </div>
           {% endif %}
