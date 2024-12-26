@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <!-- Основна інформація про чергу -->
+  <h2>Queue: #{{ printqueue.id }}</h2>
+  <hr>
+  <table class="table table-bordered">
+    <tr>
+      <th>Printer Model</th>
+      <td>{{ printqueue.printer.model }}</td>
+    </tr>
+    <tr>
+      <th>Workplace</th>
+      <td>{{ printqueue.printer.workplace }}</td>
+    </tr>
+    <tr>
+      <th>Tiles Count</th>
+      <td>{{ printqueue.tiles_count }}</td>
+    </tr>
+    <tr>
+      <th>Square Meters</th>
+      <td>{{ printqueue.square_meters }}</td>
+    </tr>
+    <tr>
+      <th>Creation Date</th>
+      <td>{{ printqueue.creation_time|date:"Y-m-d H:i" }}</td>
+    </tr>
+  </table>
+  <hr>
+  <!-- Список замовлень у черзі -->
+  <h3>Orders:</h3>
+  {% if printqueue.orders.exists %}
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>Order ID</th>
+          <th>Material</th>
+          <th>Size (m²)</th>
+          <th>Tiles Count</th>
+          <th>Details</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for order in printqueue.orders.all %}
+          <tr>
+            <td>{{ order.id }}</td>
+            <td>{{ order.material.name }}</td>
+            <td>{{ order.square_meters }}</td>
+            <td>{{ order.tiles_count }}</td>
+            <td>
+              <a href="{% url 'management:order-detail' pk=order.id %}" class="btn btn-primary btn-sm">View Order</a>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p>No orders in this queue.</p>
+  {% endif %}
+
+  <!-- Кнопка повернення до списку робочого місця -->
+  <a href="{% url 'management:workplace-detail' pk=printqueue.printer.workplace.id %}" class="btn btn-secondary">Back to Workplace</a>
+
+{% endblock %}

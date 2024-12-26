@@ -1,6 +1,5 @@
 from django.urls import path
 
-from production.models import Material
 from production.views import (
     index,
 
@@ -23,6 +22,9 @@ from production.views import (
     PrinterDetailView,
     PrinterDeleteView,
 
+    PrintQueueDetailView,
+
+    OrderDetailView,
 
 )
 
@@ -109,11 +111,26 @@ urlpatterns = [
         PrinterCreateView.as_view(),
         name="printer-create",
     ),
+
     path(
         "printers/<int:pk>/delete/",
         PrinterDeleteView.as_view(),
         name="printer-delete",
-    )
+    ),
+
+    path(
+        "print-queue/<int:pk>",
+        PrintQueueDetailView.as_view(),
+        name="print-queue-detail",
+    ),
+
+    path(
+        "orders/<int:pk>/",
+        OrderDetailView.as_view(),
+        name="order-detail",
+    ),
+
+
 ]
 
 app_name = "production"

@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h1>Order: {{ order.id }}
+  {% if user.is_staff %}
+    <a href="{% url 'management:order-update' pk=order.id %}" class="btn btn-secondary">
+    Edit
+    </a>
+  {% endif %}
+  </h1>
+  <br>
+  <table class="table">
+    <tr>
+      <th>Owner</th>
+      <td>{{ order.owner_full_name }}</td>
+    </tr>
+    <tr>
+      <th>Manager</th>
+      <td>{{ order.manager }}</td>
+    </tr>
+    <tr>
+      <th>Performer</th>
+      <td>{{ order.performer }}</td>
+    </tr>
+    <tr>
+      <th>Status</th>
+      <td>{{ order.get_status_display }}</td>
+      <td>
+        <form action="" method="post">
+          {% csrf_token %}
+          {% if order.status == order.READY_TO_PRINT %}
+            <button type="submit" class="btn btn-danger">Mark as Problem</button>
+          {% else %}
+            <button type="submit" class="btn btn-primary">Mark as Ready</button>
+          {% endif %}
+        </form>
+      </td>
+    </tr>
+    <tr>
+      <th>Country Post</th>
+      <td>{{ order.country_post }}</td>
+    </tr>
+    <tr>
+      <th>Creation Time</th>
+      <td>{{ order.creation_time }}</td>
+    </tr>
+    <tr>
+      <th>Performing Time</th>
+      <td>{{ order.performing_time }}</td>
+    </tr>
+    <tr>
+      <th>Image Name</th>
+      <td>{{ order.image_name }}</td>
+    </tr>
+    <tr>
+      <th>Material</th>
+      <td>{{ order.material }}</td>
+    </tr>
+    <tr>
+      <th>Dimensions (W x H)</th>
+      <td>{{ order.width }} x {{ order.height }} cm</td>
+    </tr>
+    <tr>
+      <th>Square Meters</th>
+      <td>{{ order.square_meters }} m²</td>
+    </tr>
+    <tr>
+      <th>Tiles Count</th>
+      <td>{{ order.tiles_count }}</td>
+    </tr>
+    <tr>
+      <th>Wide Tile Width</th>
+      <td>{{ order.wide_tile_width }} mm</td>
+    </tr>
+    <tr>
+      <th>Narrow Tile Width</th>
+      <td>{{ order.narrow_tile_width }} mm</td>
+    </tr>
+    <tr>
+      <th>Comment</th>
+      <td>{{ order.comment }}</td>
+    </tr>
+  </table>
+
+  <a href="{% url 'management:order-list' %}"> < Back to Orders List</a>
+{% endblock %}
+

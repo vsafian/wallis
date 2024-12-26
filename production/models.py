@@ -3,6 +3,7 @@ from django.core.validators import RegexValidator
 from django.db import models
 
 from production.mixins import ModelAbsoluteUrlMixin
+from django.conf import settings
 
 
 class Workplace(models.Model, ModelAbsoluteUrlMixin):
@@ -98,3 +99,77 @@ class Printer(
     @property
     def full_name(self):
         return f"{self.name} {self.model}"
+
+
+class PrintQueue(
+    models.Model,
+    ModelAbsoluteUrlMixin
+):
+    printer = models.ForeignKey(
+        Printer,
+        related_name='print_queues',
+        on_delete=models.CASCADE
+    )
+
+    material = models.ForeignKey(
+        Material,
+        on_delete=models.CASCADE,
+        related_name='print_queues',
+    )
+
+    creation_time = models.DateTimeField(
+        auto_now_add=True,
+    )
+    view_name = "production:print-queue-detail"
+
+    class Meta:
+        ordering = ['creation_time']
+
+
+class Order(
+    models.Model,
+    ModelAbsoluteUrlMixin,
+):
+    READY_TO_PRINT = 'ready_to_print'
+    IN_PRINT = 'in_print'
+    DONE = 'done'
+    PROBLEM = 'problem'
+    STATUS_CHOICES = [
+        (READY_TO_PRINT, 'Ready to Print'),
+        (IN_PRINT, 'In Print'),
+        (DONE, 'Done'),
+        (PROBLEM, 'Order Problem'),
+    ]
+    owner_full_name = models.CharField(max_length=255)
+    manager = models.CharField(max_length=255, default="AutoCreate")
+    performer = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        related_name='orders',
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True
+    )
+    status = models.CharField(
+        max_length=100,
+        choices=STATUS_CHOICES,
+        default=READY_TO_PRINT,
+    )
+    country_post = models.CharField(max_length=255, default="ukr-Nova Post")
+    creation_time = models.DateTimeField(auto_now_add=True)
+    performing_time = models.DateTimeField(
+        null=True, blank=True
+    )
+    image_name = models.CharField(max_length=255)
+    material = models.ForeignKey(Material, related_name='orders', on_delete=models.CASCADE)
+    width = models.IntegerField()
+    height = models.IntegerField()
+    comment = models.CharField(max_length=255, blank=True, null=True)
+    print_queue = models.ForeignKey(
+        PrintQueue,
+        related_name='orders',
+        on_delete=models.SET_NULL,
+        null=True, blank=True,
+
+    )
+    view_name = "production:order-detail"
+

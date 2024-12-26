@@ -19,7 +19,7 @@ from production.mixins import (
     ViewSuccessUrlMixin
 )
 from production.models import (
-    Worker, Workplace, Material, Printer
+    Worker, Workplace, Material, Printer, PrintQueue, Order
 )
 
 
@@ -151,7 +151,8 @@ class PrinterListView(
     model = Printer
     paginate_by = 10
     queryset = (
-        Printer.objects.prefetch_related("materials").all()
+        Printer.objects
+        .prefetch_related("materials", "workplace").all()
     )
 
 class PrinterCreateView(
@@ -177,3 +178,18 @@ class PrinterDeleteView(
     model = Printer
     success_url = reverse_lazy("production:printer-list")
     template_name = "production/printer_confirm_delete.html"
+
+
+class PrintQueueDetailView(
+    LoginRequiredMixin,
+    generic.DetailView
+):
+    model = PrintQueue
+    template_name = "production/print_queue_detail.html"
+
+
+class OrderDetailView(
+    LoginRequiredMixin,
+    generic.DetailView
+):
+    model = Order
