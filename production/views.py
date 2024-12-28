@@ -152,7 +152,8 @@ class PrinterListView(
     paginate_by = 10
     queryset = (
         Printer.objects
-        .prefetch_related("materials", "workplace").all()
+        .prefetch_related("materials", "workplace")
+        .all()
     )
 
 class PrinterCreateView(
@@ -193,7 +194,7 @@ class PrintQueueListView(
 ):
     model = PrintQueue
     paginate_by = 10
-
+    template_name = "production/print_queue_list.html"
 
 class OrderDetailView(
     LoginRequiredMixin,

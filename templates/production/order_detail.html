@@ -1,87 +1,57 @@
 {% extends "base.html" %}
-
 {% block content %}
-  <h1>Order: {{ order.id }}
+<hr>
+<div class="d-flex justify-content-between align-items-center">
+  <h1>
+    Order: {{ order }}
+  </h1>
   {% if user.is_staff %}
-    <a href="{% url 'management:order-update' pk=order.id %}" class="btn btn-secondary">
-    Edit
+    <a class="btn btn-danger btn-sm"
+       href="#"
+       title="Delete Order"
+    >
+      <i class="material-icons">delete</i>
     </a>
   {% endif %}
-  </h1>
+</div>
+<hr>
+<div>
+  <h2>Base information:</h2>
   <br>
-  <table class="table">
-    <tr>
-      <th>Owner</th>
-      <td>{{ order.owner_full_name }}</td>
-    </tr>
-    <tr>
-      <th>Manager</th>
-      <td>{{ order.manager }}</td>
-    </tr>
-    <tr>
-      <th>Performer</th>
-      <td>{{ order.performer }}</td>
-    </tr>
-    <tr>
-      <th>Status</th>
-      <td>{{ order.get_status_display }}</td>
-      <td>
-        <form action="" method="post">
-          {% csrf_token %}
-          {% if order.status == order.READY_TO_PRINT %}
-            <button type="submit" class="btn btn-danger">Mark as Problem</button>
-          {% else %}
-            <button type="submit" class="btn btn-primary">Mark as Ready</button>
-          {% endif %}
-        </form>
-      </td>
-    </tr>
-    <tr>
-      <th>Country Post</th>
-      <td>{{ order.country_post }}</td>
-    </tr>
-    <tr>
-      <th>Creation Time</th>
-      <td>{{ order.creation_time }}</td>
-    </tr>
-    <tr>
-      <th>Performing Time</th>
-      <td>{{ order.performing_time }}</td>
-    </tr>
-    <tr>
-      <th>Image Name</th>
-      <td>{{ order.image_name }}</td>
-    </tr>
-    <tr>
-      <th>Material</th>
-      <td>{{ order.material }}</td>
-    </tr>
-    <tr>
-      <th>Dimensions (W x H)</th>
-      <td>{{ order.width }} x {{ order.height }} cm</td>
-    </tr>
-    <tr>
-      <th>Square Meters</th>
-      <td>{{ order.square_meters }} m²</td>
-    </tr>
-    <tr>
-      <th>Tiles Count</th>
-      <td>{{ order.tiles_count }}</td>
-    </tr>
-    <tr>
-      <th>Wide Tile Width</th>
-      <td>{{ order.wide_tile_width }} mm</td>
-    </tr>
-    <tr>
-      <th>Narrow Tile Width</th>
-      <td>{{ order.narrow_tile_width }} mm</td>
-    </tr>
-    <tr>
-      <th>Comment</th>
-      <td>{{ order.comment }}</td>
-    </tr>
-  </table>
-
-  <a href="{% url 'management:order-list' %}"> < Back to Orders List</a>
+  <p><strong>Owner:</strong> {{ order.owner_full_name }}</p>
+  <p><strong>Manager:</strong> {{ order.manager }}</p>
+  <p><strong>Post:</strong> {{ order.country_post }}</p>
+  <p><strong>Creation time:</strong> {{ order.creation_time }}</p>
+  <div class="d-flex  align-items-baseline justify-content-between">
+    <p><strong>Status:</strong> {{ order.get_status_display }}</p>
+    {% if order.status == order.READY_TO_PRINT %}
+      <form action="" method="post">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-danger">Mark as Problem</button>
+      </form>
+    {% endif %}
+  </div>
+  <p><strong>Comment:</strong> {{ order.comment }}</p>
+</div>
+<hr>
+<div>
+  <h2>Production details:</h2>
+  <p><strong>Image:</strong> {{ order.image_name }}</p>
+  <p><strong>Material:</strong> {{ order.material }}</p>
+  <p><strong>Square meters:</strong> {{ order.square_meters }} m².</p>
+  <p><strong>Tiles count:</strong> {{ order.tiles_count }}</p>
+  <p><strong>Wide tile width:</strong> {{ order.wide_tile_width }} mm.</p>
+  <p><strong>Narrow tile width:</strong> {{ order.narrow_tile_width }} mm.</p>
+</div>
+<hr>
+<div>
+  <h2>Performing details:</h2>
+  <p><strong>Performed by:</strong> {{ order.performer }}</p>
+  <p><strong>Performing time:</strong> {{ order.performing_time }}</p>
+</div>
+<hr>
+<div>
+  <a class="btn-link page-link" href="{% url 'production:order-list' %}"> < Back to Orders List</a>
+</div>
 {% endblock %}
 

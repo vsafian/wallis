@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block content %}
+  {% if order_list %}
+    <div class="text-center">
+      <h2>Search string</h2>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-header card-header-tabs card-header-warning">
+            <div class="nav-tabs-navigation">
+              <div class="nav-tabs-wrapper">
+                <div class="d-flex align-items-center justify-content-between">
+                  <h1 class="nav-tabs-title">Orders:</h1>
+                  <ul class="nav nav-tabs" data-tabs="tabs">
+                    <li class="nav-item">
+                      <a class="nav-link active"
+                         href="#"
+                         title="Add order"
+                      >
+                        <i class="material-icons">add</i>
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive h4">
+              <table class="table">
+                <thead class="text-warning">
+                <tr>
+                  <th>ID</th>
+                  <th>Name</th>
+                  <th>Material</th>
+                  <th>Tiles count</th>
+                  <th>M²</th>
+                  <th>Status</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for order in order_list %}
+                  <tr>
+                    <td>{{ order.id }}</td>
+                    <td>
+                      <a class="page-link text-warning"
+                         href="{% url 'production:order-detail' pk=order.id %}"
+                      >
+                        {{ order }}
+                      </a>
+                    </td>
+                    <td>{{ order.material.name }}</td>
+                    <td>{{ order.tiles_count }}</td>
+                    <td>{{ order.square_meters }}</td>
+                    <td>
+                      {% if order.status == order.PROBLEM %}
+                      <div class="text-danger">{{ order.get_status_display }}</div>
+                      {% else %}
+                        {{ order.get_status_display }}
+                      {% endif %}
+                    </td>
+                  </tr>
+                {% endfor %}
+                </tbody>
+              </table>
+              {% include "includes/pagination.html" %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% else %}
+    <div class="d-flex justify-content-between align-items-center">
+      <h2 class="text-primary">There are no orders in the service now!</h2>
+      {% if worker.id == user.id or user.is_staff %}
+        <a class="btn btn-primary btn-sm"
+           href="#"
+           title="Add order"
+        >
+          <i class="material-icons">add</i>
+        </a>
+      {% endif %}
+    </div>
+  {% endif %}
+{% endblock %}
+{% block pagination %}
+{% endblock %}

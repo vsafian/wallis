@@ -74,6 +74,12 @@
             <p>Printers</p>
           </a>
         </li>
+        <li class="nav-item {% if 'ui-tables' in segment %} active {% endif %}">
+          <a class="nav-link" href="{% url 'production:print-queue-list' %}">
+            <i class="material-icons">library_books</i>
+            <p>Print Queues</p>
+          </a>
+        </li>
       {% endif %}
     </ul>
   </div>
