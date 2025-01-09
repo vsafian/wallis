@@ -1,25 +1,20 @@
 {% extends "base.html" %}
 
 {% block content %}
-  <!-- Основна інформація про чергу -->
-  <h2>Queue: #{{ printqueue.id }}</h2>
+  <h1>Queue: #{{ printqueue.id }}</h1>
   <hr>
   <table class="table table-bordered">
     <tr>
-      <th>Printer Model</th>
-      <td>{{ printqueue.printer.model }}</td>
-    </tr>
-    <tr>
       <th>Workplace</th>
-      <td>{{ printqueue.printer.workplace }}</td>
+      <td>{{ printqueue.workplace }}</td>
     </tr>
     <tr>
       <th>Tiles Count</th>
-      <td>{{ printqueue.tiles_count }}</td>
+      <td>{{ printqueue.summary.total_tiles }}</td>
     </tr>
     <tr>
       <th>Square Meters</th>
-      <td>{{ printqueue.square_meters }}</td>
+      <td>{{ printqueue.summary.total_area }}</td>
     </tr>
     <tr>
       <th>Creation Date</th>
@@ -27,38 +22,55 @@
     </tr>
   </table>
   <hr>
-  <!-- Список замовлень у черзі -->
-  <h3>Orders:</h3>
-  {% if printqueue.orders.exists %}
-    <table class="table table-bordered">
-      <thead>
-        <tr>
-          <th>Order ID</th>
-          <th>Material</th>
-          <th>Size (m²)</th>
-          <th>Tiles Count</th>
-          <th>Details</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for order in printqueue.orders.all %}
-          <tr>
-            <td>{{ order.id }}</td>
-            <td>{{ order.material.name }}</td>
-            <td>{{ order.square_meters }}</td>
-            <td>{{ order.tiles_count }}</td>
-            <td>
-              <a href="{% url 'management:order-detail' pk=order.id %}" class="btn btn-primary btn-sm">View Order</a>
-            </td>
-          </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  {% else %}
-    <p>No orders in this queue.</p>
-  {% endif %}
-
-  <!-- Кнопка повернення до списку робочого місця -->
-  <a href="{% url 'management:workplace-detail' pk=printqueue.printer.workplace.id %}" class="btn btn-secondary">Back to Workplace</a>
+  <br>
+  <div>
+    {% if printqueue.orders.exists %}
+      <div class="card card-plain">
+        <div class="card-header card-header-tabs card-header-warning rounded">
+          <div class="nav-tabs-navigation">
+            <div class="nav-tabs-wrapper">
+              <div class="d-flex align-items-center justify-content-between">
+                <h1 class="nav-tabs-title">Orders</h1>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive h4">
+            <table class="table">
+              <thead class="text-warning">
+              <tr>
+                <th>Order ID</th>
+                <th>Material</th>
+                <th>Size (m²)</th>
+                <th>Tiles Count</th>
+                <th>Details</th>
+              </tr>
+              </thead>
+              <tbody>
+              {% for order in printqueue.orders.all %}
+                <tr>
+                  <td>{{ order.id }}</td>
+                  <td>{{ order.material.name }}</td>
+                  <td>{{ order.square_meters }}</td>
+                  <td>{{ order.tiles_count }}</td>
+                  <td>
+                    <a href="{% url 'production:order-detail' pk=order.id %}" 
+                       class="btn btn-warning btn-sm"
+                    >View Order</a>
+                  </td>
+                </tr>
+              {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    {% else %}
+      <p class="text-danger"> No orders in this queue! </p>
+    {% endif %}
+  </div>
+  <a href="{% url 'production:workplace-detail' pk=printqueue.workplace.id %}" class="btn bg-inverse">< Back to
+    Workplace</a>
 
 {% endblock %}
