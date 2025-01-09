@@ -1,8 +1,8 @@
-from audioop import reverse
+from copy import copy
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
+from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views import generic
@@ -10,17 +10,28 @@ from django.views import generic
 from production.forms import (
     WorkerCreateForm,
     WorkerPhoneNumberForm,
+
     WorkplaceCreateForm,
     WorkplaceUpdateForm,
-    PrinterCreateForm
+
+    PrinterCreateForm,
+
+    PrintQueueCreateForm,
 )
 from production.mixins import (
     DeleteViewMixin,
-    ViewSuccessUrlMixin
+    ViewSuccessUrlMixin,
+    InstanceCacheMixin
 )
 from production.models import (
-    Worker, Workplace, Material, Printer, PrintQueue, Order
+    Worker,
+    Workplace,
+    Material,
+    Printer,
+    PrintQueue,
+    Order
 )
+from production.sub_classes import create_summary_context
 
 
 @login_required
@@ -195,6 +206,47 @@ class PrintQueueListView(
     model = PrintQueue
     paginate_by = 10
     template_name = "production/print_queue_list.html"
+
+
+class PrintQueueCreateView(
+    LoginRequiredMixin,
+    InstanceCacheMixin,
+    generic.CreateView
+):
+    model = PrintQueue
+    form_class = PrintQueueCreateForm
+    template_name = "production/print_queue_create_form.html"
+
+    @property
+    def workplace(self) -> Workplace:
+        return self.cache_instance(Workplace)
+
+
+
+    def get_context_data(self, **kwargs):
+        context = copy(kwargs)
+        form = self.get_form()
+
+        if "form" not in context:
+            context["form"] = form
+
+        context["workplace"] = self.workplace
+        context.update(create_summary_context(form))
+        return context
+
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["workplace"] = self.workplace
+        return kwargs
+
+    def post(self, request, *args, **kwargs):
+        form = self.get_context_data()["form"]
+        # approve є ключовим щоб створити об'єкт
+        if "approve" in request.POST and form.is_valid():
+            return self.form_valid(form)
+        return self.form_invalid(form)
+
 
 class OrderDetailView(
     LoginRequiredMixin,

@@ -39,7 +39,7 @@ def filter_queryset_by_instance(queryset: QuerySet, instance: models.Model):
 
 def set_remove_foreign_by_cleaned_data_and_instance(
         model_to_update: Type[models.Model],
-        cleaned_data: dict,
+        cleaned_data: dict[str, QuerySet[models.Model]],
         instance: models.Model
 ) -> None:
     """
@@ -54,7 +54,7 @@ def set_remove_foreign_by_cleaned_data_and_instance(
     target_plural_name = get_model_plural(model_to_update)
     instance_name = get_model_name(instance)
     new_objects = cleaned_data.get(
-        f"{target_plural_name}",
+        target_plural_name,
         model_to_update.objects.none()
     )
     exists_objects = getattr(
@@ -74,5 +74,17 @@ def set_remove_foreign_by_cleaned_data_and_instance(
         to_update, [instance_name]
     )
 
+def associate_items_with_instance(
+        instance: models.Model,
+        items: QuerySet[models.Model],
+        field_name:str = ""
+) -> None:
+    field = field_name if field_name else get_model_name(instance)
+    to_update = []
 
+    for obj in items:
+        setattr(obj, field, instance)
+        to_update.append(obj)
+
+    items.bulk_update(to_update, [field])
 

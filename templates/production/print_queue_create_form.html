@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% load crispy_forms_filters %}
+
+{% block content %}
+  <h2>Create Print Queue</h2>
+  <h3>Workplace: {{ workplace }}</h3>
+  <hr>
+  <form class="form-group" action="" method="post" novalidate>
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    <div>
+      {{ form.material.label_tag }}
+      {{ form.material }}
+      {% if form.material.errors %}
+        <div class="text-danger row-form-errors mt-3">
+          {% for error in form.material.errors %}
+            <p>{{ error }}</p>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+    <br>
+    <div>
+      {{ form.orders.label_tag }}
+      {{ form.orders }}
+      {% if form.orders.errors %}
+        <div class="text-danger row-form-errors mt-3">
+          {% for error in form.orders.errors %}
+            <p>{{ error }}</p>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+    <hr>
+    {% include "includes/summary.html" %}
+    <hr>
+    <div>
+      <input class="btn btn-primary" type="submit" value="Submit" name="approve">
+    </div>
+  </form>
+  <a class="btn bg-inverse" 
+     href="{% url 'production:workplace-detail' pk=workplace.id %}"
+  >< Back to Workplace</a>
+{% endblock %}

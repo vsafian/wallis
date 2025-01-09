@@ -23,9 +23,10 @@ from production.views import (
     PrinterDeleteView,
 
     PrintQueueDetailView,
+    PrintQueueListView,
 
-    OrderDetailView, OrderListView, PrintQueueListView,
-
+    OrderDetailView,
+    OrderListView, PrintQueueCreateView,
 )
 
 urlpatterns = [
@@ -131,6 +132,12 @@ urlpatterns = [
     ),
 
     path(
+        "workplaces/<int:pk>/print-queue-create",
+        PrintQueueCreateView.as_view(),
+        name="print-queue-create",
+    ),
+
+    path(
         "orders/<int:pk>/",
         OrderDetailView.as_view(),
         name="order-detail",
@@ -141,9 +148,6 @@ urlpatterns = [
         OrderListView.as_view(),
         name="order-list",
     ),
-
-
-
 
 ]
 

@@ -1,5 +1,8 @@
 from django.core.exceptions import ImproperlyConfigured
+from django.db.models import QuerySet
+from django.forms import Field
 from django.http import HttpResponseRedirect, Http404
+from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.views import generic
 
@@ -60,3 +63,26 @@ class ViewSuccessUrlMixin:
         return (
             obj.get_absolute_url()
         )
+
+
+
+class InstanceCacheMixin:
+    model = None
+    kwargs = {}
+
+    def cache_instance(self, model):
+        """
+        Cache Model instance from url kwargs for avoid query
+        duplication when multiple calls for instance are made.
+        """
+        cache_name = f"{str(self.model.__name__).lower()}_cache"
+        if not hasattr(self, cache_name):
+            setattr(
+                self,
+                cache_name,
+                get_object_or_404(
+                    model,
+                    pk=self.kwargs["pk"]
+                )
+            )
+        return getattr(self, cache_name)
