@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 
-from production.models import Worker, Workplace
+from production.models import Worker, Workplace, Order, Material, Printer, PrintQueue
 
 
 @admin.register(Worker)
@@ -44,3 +44,7 @@ class WorkerAdmin(UserAdmin):
     )
 
 admin.site.register(Workplace)
+admin.site.register(Material)
+admin.site.register(Printer)
+admin.site.register(PrintQueue)
+admin.site.register(Order)
