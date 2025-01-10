@@ -4,6 +4,7 @@ from django.contrib.auth.forms import (
 )
 from django.db import transaction
 
+from .mixins import FormFieldMixin
 from .models import (
     Worker,
     Workplace,
@@ -15,7 +16,8 @@ from .models import (
 from .services import (
     filter_queryset_by_instance,
     set_remove_foreign_by_cleaned_data_and_instance,
-    foreign_case_help_text, associate_items_with_instance
+    foreign_case_help_text,
+    associate_items_with_instance
 )
 
 
@@ -36,13 +38,28 @@ class WorkerPhoneNumberForm(forms.ModelForm):
         fields = ("phone_number",)
 
 
-class WorkplaceCreateForm(forms.ModelForm):
+class WorkplaceCreateForm(
+    FormFieldMixin,
+    forms.ModelForm,
+):
     class Meta:
         model = Workplace
         fields = "__all__"
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.configure_widget_attrs(
+            field_name="name",
+            attrs={
+                "class": "form-control textinput"
+            }
+        )
 
-class WorkplaceUpdateForm(forms.ModelForm):
+
+class WorkplaceUpdateForm(
+    FormFieldMixin,
+    forms.ModelForm
+):
     printers = forms.ModelMultipleChoiceField(
         queryset=Printer.objects.all(),
         widget=forms.CheckboxSelectMultiple(),
@@ -66,6 +83,12 @@ class WorkplaceUpdateForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.configure_widget_attrs(
+            field_name="name",
+            attrs={
+                "class": "form-control textinput"
+            }
+        )
         self.configure_printers_queryset()
         self.configure_workers_queryset()
 
@@ -99,7 +122,10 @@ class WorkplaceUpdateForm(forms.ModelForm):
         return instance
 
 
-class PrinterCreateForm(forms.ModelForm):
+class PrinterCreateForm(
+    FormFieldMixin,
+    forms.ModelForm
+):
     materials = forms.ModelMultipleChoiceField(
         queryset=Material.objects.all(),
         widget=forms.CheckboxSelectMultiple(),
@@ -109,32 +135,35 @@ class PrinterCreateForm(forms.ModelForm):
         model = Printer
         fields = "__all__"
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        field_names = ["name", "model"]
+        attrs = {"class": "form-control textinput"}
+        for field in field_names:
+            self.configure_widget_attrs(
+                field_name=field,
+                attrs=attrs
+            )
+        self.configure_widget_attrs(
+            field_name="workplace",
+            attrs={
+                "class": "select form-control"
+            }
+        )
+
 
 class PrintQueueCreateForm(
+    FormFieldMixin,
     forms.ModelForm
-    ):
-    material = forms.ModelChoiceField(
-        queryset=(
-            Material.objects.all()
-        ),
-        widget=forms.Select(
-            attrs={
-                "onchange": "this.form.submit();",
-                "class": "select form-control",
-            }
-        ),
-    )
-
+):
     orders = forms.ModelMultipleChoiceField(
-        queryset=Order.objects.select_related("material").
-        filter(
-            print_queue=None,
+        queryset=(
+            Order.objects.select_related("material").
+            filter(
+                print_queue=None,
+            )
         ),
-        widget=forms.CheckboxSelectMultiple(
-            attrs={
-                "onchange": "this.form.submit();",
-            }
-        ),
+        widget=forms.CheckboxSelectMultiple(),
         error_messages={
             "required": (
                 "Please select at least one order!"
@@ -143,13 +172,11 @@ class PrintQueueCreateForm(
                 "Please select at least one order!"
             )
         }
-
     )
 
     class Meta:
         model = PrintQueue
-        fields = ("material", )
-
+        fields = ("material",)
 
     def __init__(self, *args, **kwargs):
         self.workplace = kwargs.pop("workplace", None)
@@ -159,8 +186,20 @@ class PrintQueueCreateForm(
             .all()
         )
         super().__init__(*args, **kwargs)
+        self.configure_widget_attrs(
+            field_name="material",
+            attrs={
+                "onchange": "this.form.submit();",
+                "class": "select form-control",
+            }
+        )
+        self.configure_widget_attrs(
+            field_name="orders",
+            attrs={
+                "onchange": "this.form.submit();",
+            }
+        )
         self.setup_material_queryset()
-
 
     def setup_material_queryset(self):
         materials_field = self.fields['material']
@@ -175,7 +214,6 @@ class PrintQueueCreateForm(
         orders_field.queryset = orders_field.queryset.filter(
             material__in=materials_field.queryset
         )
-
 
     def clean_material(self):
         material = self.cleaned_data["material"]
@@ -210,3 +248,6 @@ class PrintQueueCreateForm(
                     field_name="print_queue"
                 )
         return instance
+
+
+
