@@ -28,31 +28,30 @@
           </div>
           <div class="card-body">
             <div class="table-responsive h4">
-              <table class="table">
+              <table class="table text-center">
                 <thead class="text-warning">
                 <tr>
                   <th>ID</th>
-                  <th>Name</th>
+                  <th>Code</th>
                   <th>Material</th>
                   <th>Tiles count</th>
-                  <th>M²</th>
-                  <th>Status</th>
+                  <th>Square meters</th>
                 </tr>
                 </thead>
                 <tbody>
                 {% for order in order_list %}
                   <tr>
-                    <td>{{ order.id }}</td>
                     <td>
                       <a class="page-link text-warning"
                          href="{% url 'production:order-detail' pk=order.id %}"
                       >
-                        {{ order }}
+                        {{ order.id }}
                       </a>
                     </td>
+                    <td>{{ order.code }}</td>
                     <td>{{ order.material.name }}</td>
                     <td>{{ order.tiles_count }}</td>
-                    <td>{{ order.square_meters }}</td>
+                    <td>{{ order.square_meters }} m²</td>
                     <td>
                       {% if order.status == order.PROBLEM %}
                       <div class="text-danger">{{ order.get_status_display }}</div>

@@ -33,13 +33,14 @@
                 <tr>
                   <th>ID</th>
                   <th>Name</th>
-                  <th>Number of workers</th>
                   <th>Number of printers</th>
+                  <th>Number of print queues</th>
+                  <th>Number of workers</th>
                 </tr>
                 </thead>
                 <tbody>
                 {% for workplace in workplace_list %}
-                  <tr>
+                  <tr class="text-center">
                     <td>{{ workplace.id }}</td>
                     <td>
                       <a class="page-link text-danger"
@@ -48,8 +49,9 @@
                         {{ workplace.name }}
                       </a>
                     </td>
-                    <td>{{ workplace.workers.count }}</td>
                     <td>{{ workplace.printers.count }}</td>
+                    <td>{{ workplace.print_queues.count }}</td>
+                    <td>{{ workplace.workers.count }}</td>
                   </tr>
                 {% endfor %}
                 </tbody>
