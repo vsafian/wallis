@@ -1,6 +1,8 @@
+from typing import Optional
+
 from django.core.exceptions import ImproperlyConfigured
 from django.db.models import QuerySet
-from django.forms import Field
+from django.forms import Field, ModelChoiceField, ModelMultipleChoiceField
 from django.http import HttpResponseRedirect, Http404
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
@@ -86,3 +88,16 @@ class InstanceCacheMixin:
                 )
             )
         return getattr(self, cache_name)
+
+
+class FormFieldMixin:
+    def get_field(self, field_name: str) -> Optional[Field]:
+        """Return a form field by its name, if it exists."""
+        if hasattr(self, "fields"):
+            return self.fields.get(field_name, None)
+
+    def configure_widget_attrs(self, field_name: str, attrs: dict[str, str]) -> None:
+        """Update widget attributes for the given field."""
+        field = self.get_field(field_name)
+        if field:
+            field.widget.attrs.update(attrs)

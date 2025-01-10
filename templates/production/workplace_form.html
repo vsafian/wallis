@@ -1,5 +1,5 @@
 {% extends "base.html" %}
 {% block content %}
-  <h1>{{ object|yesno:"Update,Register new" }} workplace</h1>
-  {% include "includes/as_p_form.html" %}
+  <h1>{{ object|yesno:"Update,Add new" }} workplace</h1>
+  {% include "includes/form.html" %}
 {% endblock %}

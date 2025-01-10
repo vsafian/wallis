@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load crispy_forms_filters %}
 {% block navigation %}
   <div class="header text-center mt-5">
     <h1 class="display-4">Wallis</h1>
@@ -29,8 +30,7 @@
             <div class="row">
               <div class="col-md-12">
                 <div class="form-group">
-                  <label class="bmd-label-floating">Username </label>
-                  {{ form.username }}
+                  {{ form.username |as_crispy_field  }}
                 </div>
               </div>
             </div>
@@ -38,8 +38,7 @@
             <div class="row">
               <div class="col-md-12">
                 <div class="form-group">
-                  <label class="bmd-label-floating">Password </label>
-                  {{ form.password }}
+                  {{ form.password|as_crispy_field }}
                 </div>
               </div>
             </div>

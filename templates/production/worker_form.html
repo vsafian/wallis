@@ -2,5 +2,5 @@
 {% load crispy_forms_filters %}
 {% block content %}
   <h1> {{ object|yesno:"Update,Register new" }} worker {{ object|yesno:"profile," }}</h1>
-  {% include "includes/form.html" %}
+  {% include "includes/crispy_form.html" %}
 {% endblock %}

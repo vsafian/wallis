@@ -1,15 +1,17 @@
 <div id="summary">
-  <h2>Summary:</h2>
+  <hr>
+  <h3>Summary:</h3>
   <div>
     <p><strong>Total Tiles:</strong> <span id="total-tiles">{{ summary.total_tiles }}</span></p>
     <p><strong>Total Area:</strong> <span id="total-area">{{ summary.total_area }}</span> m²</p>
     <p><strong>Winding left:</strong> <span id="winding-left">{{ summary.winding_left }}</span> m²</p>
   </div>
   <div class="text-danger row-form-errors mt-3">
-  {% if summary.messages %}
-    {% for message in summary.messages %}
+    {% if summary.messages %}
+      {% for message in summary.messages %}
         <p>{{ message }}</p>
-    {% endfor %}
-  {% endif %}
+      {% endfor %}
+    {% endif %}
   </div>
+  <hr>
 </div>
