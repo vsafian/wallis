@@ -5,6 +5,8 @@ from django.db import models
 from production.mixins import ModelAbsoluteUrlMixin
 from django.conf import settings
 
+from production.sub_classes import PrintQueueSummary
+
 
 class Workplace(models.Model, ModelAbsoluteUrlMixin):
     name = models.CharField(max_length=100)
@@ -85,6 +87,7 @@ class Printer(
         on_delete=models.SET_NULL,
         null=True, blank=True
     )
+
     view_name = "production:printer-detail"
 
     class Meta:
@@ -92,7 +95,7 @@ class Printer(
 
     def __str__(self):
         return (
-            f"({self.name} {self.model[:4]} | "
+            f"({self.full_name} | "
             f"Workplace: {self.workplace})"
         )
 
@@ -105,10 +108,10 @@ class PrintQueue(
     models.Model,
     ModelAbsoluteUrlMixin
 ):
-    printer = models.ForeignKey(
-        Printer,
-        related_name='print_queues',
-        on_delete=models.CASCADE
+    workplace = models.ForeignKey(
+        Workplace,
+        related_name="print_queues",
+        on_delete=models.CASCADE,
     )
 
     material = models.ForeignKey(
@@ -124,24 +127,34 @@ class PrintQueue(
 
     class Meta:
         ordering = ['creation_time']
+        default_related_name = 'print_queues'
+
+    def __str__(self):
+        return f"id: {self.id}|{self.workplace} | Material: {self.material}"
+
+    @property
+    def summary(self) -> PrintQueueSummary:
+        orders = self.orders.all()
+        return PrintQueueSummary(orders, self.material)
 
 
 class Order(
     models.Model,
     ModelAbsoluteUrlMixin,
 ):
-    READY_TO_PRINT = 'ready_to_print'
-    IN_PRINT = 'in_print'
-    DONE = 'done'
-    PROBLEM = 'problem'
-    STATUS_CHOICES = [
-        (READY_TO_PRINT, 'Ready to Print'),
-        (IN_PRINT, 'In Print'),
-        (DONE, 'Done'),
-        (PROBLEM, 'Order Problem'),
-    ]
+    code = models.CharField(
+        max_length=100, unique=True,
+        validators=[RegexValidator(
+            regex=r"^\d+$",
+            message="The code must contain only digits!",
+            code="invalid_code",
+        )]
+    )
     owner_full_name = models.CharField(max_length=255)
-    manager = models.CharField(max_length=255, default="AutoCreate")
+    manager = models.CharField(
+        max_length=255,
+        default="AutoCreate"
+    )
     performer = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         related_name='orders',
@@ -149,21 +162,28 @@ class Order(
         null=True,
         blank=True
     )
-    status = models.CharField(
-        max_length=100,
-        choices=STATUS_CHOICES,
-        default=READY_TO_PRINT,
+    country_post = models.CharField(
+        max_length=255,
+        default="ukr-Nova Post"
     )
-    country_post = models.CharField(max_length=255, default="ukr-Nova Post")
     creation_time = models.DateTimeField(auto_now_add=True)
     performing_time = models.DateTimeField(
-        null=True, blank=True
+        null=True,
+        blank=True
     )
     image_name = models.CharField(max_length=255)
-    material = models.ForeignKey(Material, related_name='orders', on_delete=models.CASCADE)
+    material = models.ForeignKey(
+        Material,
+        related_name='orders',
+        on_delete=models.CASCADE
+    )
     width = models.IntegerField()
     height = models.IntegerField()
-    comment = models.CharField(max_length=255, blank=True, null=True)
+    comment = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True
+    )
     print_queue = models.ForeignKey(
         PrintQueue,
         related_name='orders',
@@ -173,3 +193,38 @@ class Order(
     )
     view_name = "production:order-detail"
 
+
+    def __str__(self):
+        return (
+            f"#{self.id} | "
+            f"Material: {self.material} | "
+            f"Tiles: {self.tiles_count} | "
+            f"m²: {self.square_meters}"
+        )
+
+    @property
+    def square_meters(self) -> float:
+        return round(
+            self.width * self.height / 10000, 2
+        )
+
+    @property
+    def tiles_count(self, max_tile_width: int = 50) -> int:
+        segments = self.width // max_tile_width
+        single_tile_width = self.width / segments
+
+        while single_tile_width > max_tile_width:
+            segments += 1
+            single_tile_width = round(self.width / segments, 2)
+
+        return segments
+
+    @property
+    def narrow_tile_width(self) -> float:
+        return round(
+            (self.width / self.tiles_count) * 10, 2
+        )
+
+    @property
+    def wide_tile_width(self) -> float:
+        return self.narrow_tile_width * 2

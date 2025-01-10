@@ -221,8 +221,6 @@ class PrintQueueCreateView(
     def workplace(self) -> Workplace:
         return self.cache_instance(Workplace)
 
-
-
     def get_context_data(self, **kwargs):
         context = copy(kwargs)
         form = self.get_form()
@@ -233,7 +231,6 @@ class PrintQueueCreateView(
         context["workplace"] = self.workplace
         context.update(create_summary_context(form))
         return context
-
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()

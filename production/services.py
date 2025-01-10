@@ -20,7 +20,7 @@ def foreign_case_help_text(
     return (
         "Add a new or remove an existing "
         f"{get_model_plural(field_model)} from the "
-        f"{get_model_name(foreign_model)}"
+        f"{get_model_name(foreign_model)}."
     )
 
 
