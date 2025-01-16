@@ -1,7 +1,9 @@
 from copy import copy
+from lib2to3.fixes.fix_input import context
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models import QuerySet
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render
 from django.urls import reverse_lazy
@@ -11,18 +13,23 @@ from production.forms import (
     WorkerCreateForm,
     WorkerPhoneNumberForm,
 
-    WorkplaceCreateForm,
-    WorkplaceUpdateForm,
+    WorkplaceForm,
 
-    PrinterCreateForm,
+    PrinterForm,
+
+    MaterialForm,
 
     PrintQueueCreateForm,
+    PrintQueueUpdateForm, NameFieldSearchForm, OrderSearchForm,
+
 )
+
 from production.mixins import (
     DeleteViewMixin,
     ViewSuccessUrlMixin,
-    InstanceCacheMixin
+    InstanceCacheMixin, PostApproveMixin
 )
+
 from production.models import (
     Worker,
     Workplace,
@@ -31,7 +38,8 @@ from production.models import (
     PrintQueue,
     Order
 )
-from production.sub_classes import create_summary_context
+
+from production.calculations import create_summary_context
 
 
 @login_required
@@ -55,8 +63,8 @@ class WorkerDetailView(
 
 class WorkerCreateView(
     LoginRequiredMixin,
+    generic.CreateView,
     ViewSuccessUrlMixin,
-    generic.CreateView
 ):
     model = Worker
     template_name = "production/worker_form.html"
@@ -73,8 +81,8 @@ class WorkerDeleteView(
 
 class WorkerPhoneView(
     LoginRequiredMixin,
+    generic.UpdateView,
     ViewSuccessUrlMixin,
-    generic.UpdateView
 ):
     model = Worker
     form_class = WorkerPhoneNumberForm
@@ -105,20 +113,21 @@ class WorkplaceListView(
 
 class WorkplaceCreateView(
     LoginRequiredMixin,
-    generic.CreateView
+    generic.CreateView,
+    ViewSuccessUrlMixin,
 ):
     model = Workplace
-    form_class = WorkplaceCreateForm
+    form_class = WorkplaceForm
     template_name = "production/workplace_form.html"
-    success_url = reverse_lazy("production:workplace-list")
+
 
 class WorkplaceUpdateView(
     LoginRequiredMixin,
+    generic.UpdateView,
     ViewSuccessUrlMixin,
-    generic.UpdateView
 ):
     model = Workplace
-    form_class = WorkplaceUpdateForm
+    form_class = WorkplaceForm
     template_name = "production/workplace_form.html"
 
 
@@ -135,12 +144,39 @@ class WorkplaceDetailView(
     )
 
 
+class WorkplaceDeleteView(
+    LoginRequiredMixin,
+    DeleteViewMixin
+):
+    model = Workplace
+    success_url = reverse_lazy("production:workplace-list")
+    template_name = "production/workplace_confirm_delete.html"
+
+
 class MaterialListView(
     LoginRequiredMixin,
     generic.ListView
 ):
     model = Material
-    paginate_by = 10
+    paginate_by = 14
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        name = self.request.GET.get("name", "")
+        context["search_form"] = NameFieldSearchForm(
+            initial={"name": name}
+        )
+        return context
+
+
+    def get_queryset(self) -> QuerySet:
+        queryset = Material.objects.all()
+        form = NameFieldSearchForm(self.request.GET)
+        if form.is_valid():
+            return queryset.filter(
+                name__icontains=form.cleaned_data["name"]
+            )
+        return queryset
 
 
 class MaterialDetailView(
@@ -150,9 +186,40 @@ class MaterialDetailView(
     model = Material
     queryset = (
         Material.objects
-        .prefetch_related("printers", "printers__workplace")
-        .all()
+        .prefetch_related(
+            "printers",
+            "printers__workplace"
+        ).all()
     )
+
+
+class MaterialCreateView(
+    LoginRequiredMixin,
+    generic.CreateView,
+    ViewSuccessUrlMixin
+):
+    model = Material
+    form_class = MaterialForm
+    template_name = "production/material_form.html"
+
+
+class MaterialUpdateView(
+    LoginRequiredMixin,
+    generic.UpdateView,
+    ViewSuccessUrlMixin,
+):
+    model = Material
+    form_class = MaterialForm
+    template_name = "production/material_form.html"
+
+
+class MaterialDeleteView(
+    LoginRequiredMixin,
+    DeleteViewMixin
+):
+    model = Material
+    success_url = reverse_lazy("production:material-list")
+    template_name = "production/material_confirm_delete.html"
 
 
 class PrinterListView(
@@ -160,20 +227,31 @@ class PrinterListView(
     generic.ListView
 ):
     model = Printer
-    paginate_by = 10
+    paginate_by = 14
     queryset = (
         Printer.objects
         .prefetch_related("materials", "workplace")
         .all()
     )
 
+
 class PrinterCreateView(
     LoginRequiredMixin,
+    generic.CreateView,
     ViewSuccessUrlMixin,
-    generic.CreateView
-    ):
+):
     model = Printer
-    form_class = PrinterCreateForm
+    form_class = PrinterForm
+    template_name = "production/printer_form.html"
+
+
+class PrinterUpdateView(
+    LoginRequiredMixin,
+    generic.UpdateView,
+    ViewSuccessUrlMixin,
+):
+    model = Printer
+    form_class = PrinterForm
     template_name = "production/printer_form.html"
 
 
@@ -182,6 +260,7 @@ class PrinterDetailView(
     generic.DetailView
 ):
     model = Printer
+
 
 class PrinterDeleteView(
     LoginRequiredMixin,
@@ -199,6 +278,7 @@ class PrintQueueDetailView(
     model = PrintQueue
     template_name = "production/print_queue_detail.html"
 
+
 class PrintQueueListView(
     LoginRequiredMixin,
     generic.ListView
@@ -208,41 +288,13 @@ class PrintQueueListView(
     template_name = "production/print_queue_list.html"
 
 
-class PrintQueueCreateView(
+class PrintQueueDeleteView(
     LoginRequiredMixin,
-    InstanceCacheMixin,
-    generic.CreateView
+    DeleteViewMixin
 ):
     model = PrintQueue
-    form_class = PrintQueueCreateForm
-    template_name = "production/print_queue_create_form.html"
-
-    @property
-    def workplace(self) -> Workplace:
-        return self.cache_instance(Workplace)
-
-    def get_context_data(self, **kwargs):
-        context = copy(kwargs)
-        form = self.get_form()
-
-        if "form" not in context:
-            context["form"] = form
-
-        context["workplace"] = self.workplace
-        context.update(create_summary_context(form))
-        return context
-
-    def get_form_kwargs(self):
-        kwargs = super().get_form_kwargs()
-        kwargs["workplace"] = self.workplace
-        return kwargs
-
-    def post(self, request, *args, **kwargs):
-        form = self.get_context_data()["form"]
-        # approve є ключовим щоб створити об'єкт
-        if "approve" in request.POST and form.is_valid():
-            return self.form_valid(form)
-        return self.form_invalid(form)
+    success_url = reverse_lazy("production:print-queue-list")
+    template_name = "production/print_queue_confirm_delete.html"
 
 
 class OrderDetailView(
@@ -257,7 +309,88 @@ class OrderListView(
     generic.ListView
 ):
     model = Order
-    paginate_by = 10
-    queryset = (
-        Order.objects.prefetch_related("material")
-    )
+    paginate_by = 16
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        code = self.request.GET.get("code", "")
+        context["search_form"] = OrderSearchForm(
+            initial={"code": code}
+        )
+        return context
+
+    def get_queryset(self) -> QuerySet:
+        queryset = Order.objects.prefetch_related("material")
+        form = OrderSearchForm(self.request.GET)
+        if form.is_valid():
+            return queryset.filter(
+                code__icontains=form.cleaned_data["code"]
+            )
+        return queryset
+
+class PrintQueueCreateView(
+    PostApproveMixin,
+    InstanceCacheMixin,
+    LoginRequiredMixin,
+    generic.CreateView,
+    ViewSuccessUrlMixin,
+):
+
+    model = PrintQueue
+    form_class = PrintQueueCreateForm
+    template_name = "production/print_queue_form.html"
+
+    @property
+    def workplace(self) -> Workplace:
+        return self.cache_instance(Workplace)
+
+    def get_context_data(self, **kwargs):
+        context = copy(kwargs)
+        form = self.get_form()
+
+        if "form" not in context:
+            context["form"] = form
+
+        context["workplace"] = self.workplace
+        context.update(
+            create_summary_context(context.get("form"))
+        )
+        return context
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["workplace"] = self.workplace
+        return kwargs
+
+
+class PrintQueueUpdateView(
+    PostApproveMixin,
+    InstanceCacheMixin,
+    LoginRequiredMixin,
+    generic.UpdateView,
+    ViewSuccessUrlMixin,
+):
+    model = PrintQueue
+    form_class = PrintQueueUpdateForm
+    template_name = "production/print_queue_form.html"
+
+    @property
+    def print_queue(self) -> PrintQueue:
+        return self.cache_instance(PrintQueue)
+
+    def get_context_data(self, **kwargs):
+        context = copy(kwargs)
+        form = self.get_form()
+        if "form" not in context:
+            context["form"] = form
+
+        context.update(
+            create_summary_context(context.get("form"))
+        )
+        context.update({"object": self.print_queue})
+        return context
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["item"] = self.print_queue
+        return kwargs

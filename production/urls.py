@@ -13,9 +13,13 @@ from production.views import (
     WorkplaceCreateView,
     WorkplaceUpdateView,
     WorkplaceDetailView,
+    WorkplaceDeleteView,
 
     MaterialListView,
     MaterialDetailView,
+    MaterialCreateView,
+    MaterialUpdateView,
+    MaterialDeleteView,
 
     PrinterListView,
     PrinterCreateView,
@@ -24,9 +28,13 @@ from production.views import (
 
     PrintQueueDetailView,
     PrintQueueListView,
+    PrinterUpdateView,
 
     OrderDetailView,
-    OrderListView, PrintQueueCreateView,
+    OrderListView,
+
+    PrintQueueDeleteView, PrintQueueCreateView, PrintQueueUpdateView,
+
 )
 
 urlpatterns = [
@@ -85,6 +93,12 @@ urlpatterns = [
     ),
 
     path(
+        "workplaces/<int:pk>/delete/",
+        WorkplaceDeleteView.as_view(),
+        name="workplace-delete",
+    ),
+
+    path(
         "materials/",
         MaterialListView.as_view(),
         name="material-list",
@@ -93,6 +107,22 @@ urlpatterns = [
     path("materials/<int:pk>/",
          MaterialDetailView.as_view(),
          name="material-detail",
+    ),
+
+    path(
+        "materials/create/",
+        MaterialCreateView.as_view(),
+        name="material-create"
+    ),
+
+    path("materials/<int:pk>/update/",
+         MaterialUpdateView.as_view(),
+         name="material-update"
+    ),
+
+    path("materials/<int:pk>/delete/",
+         MaterialDeleteView.as_view(),
+         name="material-delete"
     ),
 
     path(
@@ -114,15 +144,15 @@ urlpatterns = [
     ),
 
     path(
-        "printers/<int:pk>/delete/",
-        PrinterDeleteView.as_view(),
-        name="printer-delete",
+        "printers/<int:pk>/update/",
+        PrinterUpdateView.as_view(),
+        name="printer-update",
     ),
 
     path(
-        "print-queues/<int:pk>",
-        PrintQueueDetailView.as_view(),
-        name="print-queue-detail",
+        "printers/<int:pk>/delete/",
+        PrinterDeleteView.as_view(),
+        name="printer-delete",
     ),
 
     path(
@@ -135,6 +165,24 @@ urlpatterns = [
         "workplaces/<int:pk>/print-queue-create",
         PrintQueueCreateView.as_view(),
         name="print-queue-create",
+    ),
+
+    path(
+        "print-queues/<int:pk>/update/",
+        PrintQueueUpdateView.as_view(),
+        name="print-queue-update",
+    ),
+
+    path(
+        "print-queues/<int:pk>",
+        PrintQueueDetailView.as_view(),
+        name="print-queue-detail",
+    ),
+
+    path(
+        "print-queues/<int:pk>/delete/",
+        PrintQueueDeleteView.as_view(),
+        name="print-queue-delete",
     ),
 
     path(

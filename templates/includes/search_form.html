@@ -1,0 +1,10 @@
+{% load crispy_forms_filters %}
+<form method="get" action="" class="search navbar-wrapper form-inline">
+  {{ search_form|crispy }}
+  <button 
+      type="submit" 
+      class="page-link text-secondary border-0">
+    <i class="material-icons">search</i>
+  </button>
+</form>
+

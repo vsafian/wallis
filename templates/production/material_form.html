@@ -1,0 +1,5 @@
+{% extends "base.html" %}
+{% block content %}
+  <h1>{{ object|yesno:"Update,Register new" }} material</h1>
+  {% include "includes/crispy_form.html" %}
+{% endblock %}
