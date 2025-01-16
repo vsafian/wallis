@@ -1,4 +1,5 @@
-from typing import List, Dict, Union
+from typing import List, Dict, Union, Any
+from django.forms import BaseForm
 
 
 class PrintQueueSummary:
@@ -36,14 +37,14 @@ class PrintQueueSummary:
         warning = "Warning: "
         if self.winding_left < 0:
             messages.append(
-                f"{warning}You have too many orders!"
+                warning + "You have too many orders!"
             )
         if self.total_tiles % 2 != 0:
             messages.append(
-                f"{warning}The recommended number of tiles must be even!"
+                warning + "The recommended number "
+                          "of tiles must be even!"
             )
         return messages
-
 
     def as_dict(self) -> Dict[str, Union[int, float, List[str]]]:
         return {
@@ -58,23 +59,29 @@ class PrintQueueSummary:
             "summary": self.as_dict(),
         }
 
-    def set_orders(self, orders) -> None:
-        self.orders = orders
-
-    def set_material(self, material) -> None:
-        self.material = material
+    def set_field(self, field_name: str, value: Any):
+        if hasattr(self, field_name):
+            setattr(self, field_name, value)
+        else:
+            raise AttributeError(
+                f"{self.__class__.__name__} object has no attribute {field_name}."
+            )
 
 
 def create_summary_context(
-        form,
-    ):
-    """Generate Summary from form context data."""
+        form: BaseForm,
+):
+    """Generate Summary from form context data or initial_contex property."""
+    target_fields = ["orders", "material"]
     summary = PrintQueueSummary()
+    summary_context = {}
     form.is_valid()
     if hasattr(form, 'cleaned_data'):
-        cleaned_data = form.cleaned_data
-        summary.set_orders(
-            cleaned_data.get('orders', None))
-        summary.set_material(
-            cleaned_data.get('material', None))
+        summary_context = form.cleaned_data
+    elif hasattr(form, "initial_context"):
+        summary_context = form.initial_context
+    for field in target_fields:
+        summary.set_field(
+            field, summary_context.get(field, None)
+        )
     return summary.as_context()
