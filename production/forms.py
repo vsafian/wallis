@@ -187,7 +187,7 @@ class PrintQueueCreateForm(
 
         orders_field.queryset = orders_field.queryset.filter(
             material__in=materials_field.queryset
-        )
+        ).order_by("creation_time")
 
     def clean_material(self):
         material = self.cleaned_data["material"]
@@ -256,7 +256,7 @@ class PrintQueueUpdateForm(
         orders = self.get_field("orders")
         orders.queryset = orders.queryset.filter(
             material=self.item.material
-        )
+        ).order_by("creation_time")
         self.filter_field_queryset_by_instance("orders")
         self.set_initial_default_queryset("orders")
 
@@ -321,3 +321,16 @@ class OrderSearchForm(
             attrs={"placeholder": "Search by code"}
         )
     )
+
+
+class WorkerSearchForm(
+    forms.Form,
+):
+  username = forms.CharField(
+      max_length=255,
+      required=False,
+      label="",
+      widget=forms.TextInput(
+          attrs={"placeholder": "Search by username"}
+      )
+  )

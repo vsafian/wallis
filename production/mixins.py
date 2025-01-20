@@ -77,6 +77,29 @@ class ViewSuccessUrlMixin:
         )
 
 
+class ListViewSearchMixin(generic.ListView):
+    search_form = None
+    search_field: str = None
+    search_queryset: QuerySet = None
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        field = self.request.GET.get(self.search_field, "")
+        context["search_form"] = self.search_form(
+            initial={self.search_field: field}
+        )
+        return context
+
+    def get_queryset(self) -> QuerySet:
+        form = self.search_form(self.request.GET)
+        if form.is_valid():
+            search_filter = {
+                f"{self.search_field}__icontains":
+                    form.cleaned_data[self.search_field]
+            }
+            return self.search_queryset.filter(**search_filter)
+
+
 class InstanceCacheMixin:
     model = None
     kwargs = {}
