@@ -1,9 +1,8 @@
 from copy import copy
-from lib2to3.fixes.fix_input import context
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db.models import QuerySet
+from django.db.models import QuerySet, Q
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render
 from django.urls import reverse_lazy
@@ -20,14 +19,19 @@ from production.forms import (
     MaterialForm,
 
     PrintQueueCreateForm,
-    PrintQueueUpdateForm, NameFieldSearchForm, OrderSearchForm,
+    PrintQueueUpdateForm,
 
+    NameFieldSearchForm,
+    OrderSearchForm,
+    WorkerSearchForm,
 )
 
 from production.mixins import (
     DeleteViewMixin,
     ViewSuccessUrlMixin,
-    InstanceCacheMixin, PostApproveMixin
+    InstanceCacheMixin,
+    PostApproveMixin,
+    ListViewSearchMixin
 )
 
 from production.models import (
@@ -91,23 +95,29 @@ class WorkerPhoneView(
 
 class WorkerListView(
     LoginRequiredMixin,
-    generic.ListView
+    ListViewSearchMixin,
 ):
     model = Worker
-    paginate_by = 10
-    queryset = (
-        Worker.objects.select_related("workplace").all()
+    paginate_by = 14
+    search_form = WorkerSearchForm
+    search_field = "username"
+    search_queryset = (
+        Worker.objects.select_related("workplace")
+        .all()
     )
 
 
 class WorkplaceListView(
     LoginRequiredMixin,
-    generic.ListView
+    ListViewSearchMixin
 ):
     model = Workplace
-    paginate_by = 10
-    queryset = (
-        Workplace.objects.prefetch_related("workers").all()
+    paginate_by = 12
+    search_form = NameFieldSearchForm
+    search_field = "name"
+    search_queryset = (
+        Workplace.objects.prefetch_related("workers")
+        .all()
     )
 
 
@@ -155,28 +165,13 @@ class WorkplaceDeleteView(
 
 class MaterialListView(
     LoginRequiredMixin,
-    generic.ListView
+    ListViewSearchMixin
 ):
     model = Material
     paginate_by = 14
-
-    def get_context_data(self, *, object_list=None, **kwargs):
-        context = super().get_context_data(**kwargs)
-        name = self.request.GET.get("name", "")
-        context["search_form"] = NameFieldSearchForm(
-            initial={"name": name}
-        )
-        return context
-
-
-    def get_queryset(self) -> QuerySet:
-        queryset = Material.objects.all()
-        form = NameFieldSearchForm(self.request.GET)
-        if form.is_valid():
-            return queryset.filter(
-                name__icontains=form.cleaned_data["name"]
-            )
-        return queryset
+    search_form = NameFieldSearchForm
+    search_field = "name"
+    search_queryset = Material.objects.all()
 
 
 class MaterialDetailView(
@@ -224,15 +219,26 @@ class MaterialDeleteView(
 
 class PrinterListView(
     LoginRequiredMixin,
-    generic.ListView
+    ListViewSearchMixin
 ):
     model = Printer
     paginate_by = 14
-    queryset = (
+    search_form = NameFieldSearchForm
+    search_field = "name"
+    search_queryset = (
         Printer.objects
         .prefetch_related("materials", "workplace")
         .all()
     )
+
+    def get_queryset(self) -> QuerySet:
+        form = self.search_form(self.request.GET)
+        if form.is_valid():
+            return self.search_queryset.filter(
+                Q(name__icontains=form.cleaned_data["name"]) |
+                Q(model__icontains=form.cleaned_data["name"])
+            )
+        return self.search_queryset
 
 
 class PrinterCreateView(
@@ -306,27 +312,17 @@ class OrderDetailView(
 
 class OrderListView(
     LoginRequiredMixin,
-    generic.ListView
+    ListViewSearchMixin
 ):
     model = Order
     paginate_by = 16
+    search_form = OrderSearchForm
+    search_field = "code"
+    search_queryset = (
+        Order.objects.prefetch_related("material")
+        .all()
+    )
 
-    def get_context_data(self, *, object_list=None, **kwargs):
-        context = super().get_context_data(**kwargs)
-        code = self.request.GET.get("code", "")
-        context["search_form"] = OrderSearchForm(
-            initial={"code": code}
-        )
-        return context
-
-    def get_queryset(self) -> QuerySet:
-        queryset = Order.objects.prefetch_related("material")
-        form = OrderSearchForm(self.request.GET)
-        if form.is_valid():
-            return queryset.filter(
-                code__icontains=form.cleaned_data["code"]
-            )
-        return queryset
 
 class PrintQueueCreateView(
     PostApproveMixin,

@@ -5,15 +5,20 @@ from django.db import models
 from production.mixins import ModelAbsoluteUrlMixin
 from django.conf import settings
 
-from production.sub_classes import PrintQueueSummary
+from production.calculations import PrintQueueSummary
 
 
 class Workplace(models.Model, ModelAbsoluteUrlMixin):
     name = models.CharField(max_length=100)
     view_name = "production:workplace-detail"
 
+    class Meta:
+        ordering = ("id",)
+
     def __str__(self):
         return self.name
+
+
 
 
 class Worker(AbstractUser, ModelAbsoluteUrlMixin):
@@ -44,7 +49,7 @@ class Worker(AbstractUser, ModelAbsoluteUrlMixin):
         ordering = ['-date_joined']
 
     def __str__(self):
-        return f"{self.username} | Workplace: {self.workplace}"
+        return self.username
 
 
 class Material(
@@ -94,10 +99,7 @@ class Printer(
         ordering = ['name']
 
     def __str__(self):
-        return (
-            f"({self.full_name} | "
-            f"Workplace: {self.workplace})"
-        )
+        return self.full_name
 
     @property
     def full_name(self):
@@ -127,10 +129,9 @@ class PrintQueue(
 
     class Meta:
         ordering = ['creation_time']
-        default_related_name = 'print_queues'
 
     def __str__(self):
-        return f"id: {self.id}|{self.workplace} | Material: {self.material}"
+        return f"#{self.id}"
 
     @property
     def summary(self) -> PrintQueueSummary:
@@ -193,10 +194,12 @@ class Order(
     )
     view_name = "production:order-detail"
 
+    class Meta:
+        ordering = ['creation_time']
 
     def __str__(self):
         return (
-            f"#{self.id} | "
+            f"#{self.code} | "
             f"Material: {self.material} | "
             f"Tiles: {self.tiles_count} | "
             f"m²: {self.square_meters}"
@@ -209,7 +212,8 @@ class Order(
         )
 
     @property
-    def tiles_count(self, max_tile_width: int = 50) -> int:
+    def tiles_count(self) -> int:
+        max_tile_width: int = 50
         segments = self.width // max_tile_width
         single_tile_width = self.width / segments
 
