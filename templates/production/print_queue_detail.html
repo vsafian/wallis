@@ -1,12 +1,35 @@
 {% extends "base.html" %}
 
 {% block content %}
-  <h1>Queue: #{{ printqueue.id }}</h1>
-  <hr>
+  <div class="d-flex justify-content-between align-items-center">
+    <h1>
+      Print Queue: #{{ printqueue.id }}
+    </h1>
+    {% if user.is_staff or user in printqueue.workplace.workers %}
+      <div>
+        <a class="btn bg-secondary btn-sm"
+           href="{% url 'production:print-queue-update' pk=printqueue.id %}"
+           title="Edit print queue"
+        ><i class="material-icons">edit</i>
+        </a>
+        <a class="btn btn-danger btn-sm"
+           href="{% url 'production:print-queue-delete' pk=printqueue.id %}"
+           title="Delete print queue"
+        >
+          <i class="material-icons">delete</i>
+        </a>
+      </div>
+    {% endif %}
+  </div>
+  <br>
   <table class="table table-bordered">
     <tr>
       <th>Workplace</th>
       <td>{{ printqueue.workplace }}</td>
+    </tr>
+    <tr>
+      <th>Creation Date</th>
+      <td>{{ printqueue.creation_time|date:"Y-m-d H:i" }}</td>
     </tr>
     <tr>
       <th>Tiles Count</th>
@@ -17,11 +40,10 @@
       <td>{{ printqueue.summary.total_area }}</td>
     </tr>
     <tr>
-      <th>Creation Date</th>
-      <td>{{ printqueue.creation_time|date:"Y-m-d H:i" }}</td>
+      <th>Roll left</th>
+      <td>{{ printqueue.summary.winding_left }} m²</td>
     </tr>
   </table>
-  <hr>
   <br>
   <div>
     {% if printqueue.orders.exists %}
@@ -31,13 +53,19 @@
             <div class="nav-tabs-wrapper">
               <div class="d-flex align-items-center justify-content-between">
                 <h1 class="nav-tabs-title">Orders</h1>
+                {% if user in printqueue.workplace.workers.all or user.is_staff %}
+                  <ul class="nav nav-tabs" data-tabs="tabs">
+                    <li class="nav-item">
+                    </li>
+                  </ul>
+                {% endif %}
               </div>
             </div>
           </div>
         </div>
         <div class="card-body">
           <div class="table-responsive h4">
-            <table class="table">
+            <table class="table text-center">
               <thead class="text-warning">
               <tr>
                 <th>Order ID</th>
@@ -55,7 +83,7 @@
                   <td>{{ order.square_meters }}</td>
                   <td>{{ order.tiles_count }}</td>
                   <td>
-                    <a href="{% url 'production:order-detail' pk=order.id %}" 
+                    <a href="{% url 'production:order-detail' pk=order.id %}"
                        class="btn btn-warning btn-sm"
                     >View Order</a>
                   </td>
@@ -70,7 +98,8 @@
       <p class="text-danger"> No orders in this queue! </p>
     {% endif %}
   </div>
-  <a href="{% url 'production:workplace-detail' pk=printqueue.workplace.id %}" class="btn bg-inverse">< Back to
-    Workplace</a>
-
+  <a href="{% url 'production:workplace-detail' pk=printqueue.workplace.id %}"
+     class="btn bg-inverse"
+  >< Back to Workplace
+  </a>
 {% endblock %}

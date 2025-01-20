@@ -1,9 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
   {% if material_list %}
-    <div class="text-center">
-      <h2>{% include "includes/search_form.html" %}</h2>
-    </div>
     <div class="row">
       <div class="col-md-12">
         <div class="card">
@@ -12,6 +9,16 @@
               <div class="nav-tabs-wrapper">
                 <div class="d-flex align-items-center justify-content-between">
                   <h1 class="nav-tabs-title">Materials:</h1>
+                  <ul class="nav nav-tabs" data-tabs="tabs">
+                    <li class="nav-item">
+                      <a class="nav-link active"
+                         href="{% url 'production:material-create' %}"
+                         title="Add material"
+                      >
+                        <i class="material-icons">add</i>
+                      </a>
+                    </li>
+                  </ul>
                 </div>
               </div>
             </div>

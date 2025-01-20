@@ -6,12 +6,20 @@
       Material: {{ material.name }}
     </h1>
     {% if user.is_staff %}
-      <a class="btn btn-danger btn-sm"
-         href="#"
-         title="Delete Printer"
-      >
-        <i class="material-icons">delete</i>
-      </a>
+      <div>
+        <a class="btn bg-secondary btn-sm"
+           href="{% url 'production:material-update' pk=material.id %}"
+           title="Edit material"
+        >
+          <i class="material-icons">edit</i>
+        </a>
+        <a class="btn btn-danger btn-sm"
+           href="{% url 'production:material-delete' pk=material.id %}"
+           title="Delete Material"
+        >
+          <i class="material-icons">delete</i>
+        </a>
+      </div>
     {% endif %}
   </div>
   <hr>
@@ -29,7 +37,7 @@
   <div>
     {% if material.printers.all %}
       <div class="card card-plain">
-        <div class="card-header card-header-tabs card-header-warning rounded">
+        <div class="card-header card-header-tabs card-header-success rounded">
           <div class="nav-tabs-navigation">
             <div class="nav-tabs-wrapper">
               <div class="d-flex align-items-center justify-content-between">
@@ -41,7 +49,7 @@
         <div class="card-body">
           <div class="table-responsive h4">
             <table class="table">
-              <thead class="text-warning">
+              <thead class="text-success">
               <tr>
                 <th>ID</th>
                 <th>Name</th>
@@ -54,7 +62,7 @@
                   <td>{{ printer.id }}</td>
                   <td>
                     <a href="{{ printer.get_absolute_url }}"
-                       class="page-link text-warning"
+                       class="page-link text-success"
                     >
                       {{ printer.full_name }}
                     </a>

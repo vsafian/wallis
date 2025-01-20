@@ -13,7 +13,7 @@
           <i class="material-icons">edit</i>
         </a>
         <a class="btn btn-danger btn-sm"
-           href="#"
+           href="{% url 'production:workplace-delete' pk=workplace.id %}"
            title="Delete Workplace"
         >
           <i class="material-icons">delete</i>
@@ -25,9 +25,86 @@
   <div class="row">
     <div class="col-sm-12">
       <div>
+        {% if workplace.print_queues.exists %}
+          <div class="card card-plain">
+            <div class="card-header card-header-tabs card-header-danger rounded">
+              <div class="nav-tabs-navigation">
+                <div class="nav-tabs-wrapper">
+                  <div class="d-flex align-items-center justify-content-between">
+                    <h1 class="nav-tabs-title">Print Queues</h1>
+                    {% if user in workplace.workers.all or user.is_staff and workplace.printers.exists %}
+                      <ul class="nav nav-tabs" data-tabs="tabs">
+                        <li class="nav-item">
+                          <a class="nav-link active"
+                             href="{% url 'production:print-queue-create' pk=workplace.id %}"
+                             title="Add print queue"
+                          >
+                            <i class="material-icons">add</i>
+                          </a>
+                        </li>
+                      </ul>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="table-responsive h4">
+                <table class="table text-center">
+                  <thead class="text-danger">
+                  <tr>
+                    <th>ID</th>
+                    <th>Material</th>
+                    <th>Creation Time</th>
+                    <th>Square meters</th>
+                    <th>Winding left</th>
+                    <th></th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  {% for print_queue in workplace.print_queues.all %}
+                    <tr>
+                      <td>
+                        <a class="page-link text-danger"
+                           href="{% url 'production:print-queue-detail' pk=print_queue.id %}">{{ print_queue.id }}</a>
+                      </td>
+                      <td>{{ print_queue.material.name }}</td>
+                      <td>{{ print_queue.creation_time }}</td>
+                      <td>{{ print_queue.summary.total_area }} m²</td>
+                      <td>{{ print_queue.summary.winding_left }} m²</td>
+                      <td>
+                        <a href="{% url "production:print-queue-delete" pk=print_queue.id %}"
+                           class="btn btn-danger btn-sm"
+                        >Delete
+                        </a>
+                      </td>
+                    </tr>
+                  {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        {% else %}
+          <div class="d-flex align-items-center justify-content-between">
+            <h2 class="text-danger mr-3"> There are no print queues yet! </h2>
+            {% if workplace.printers.exists and user.is_staff or user in workplace.workers %}
+              <a class="btn btn-danger btn-sm"
+                 href="{% url 'production:print-queue-create' pk=workplace.id %}" 
+                 title="Add print queue"
+              >
+                <i class="material-icons">add</i>
+              </a>
+            {% endif %}
+          </div>
+        {% endif %}
+      </div>
+      <hr>
+      <br>
+      <div>
         {% if workplace.printers.exists %}
           <div class="card card-plain">
-            <div class="card-header card-header-tabs card-header-primary rounded">
+            <div class="card-header card-header-tabs card-header-danger rounded">
               <div class="nav-tabs-navigation">
                 <div class="nav-tabs-wrapper">
                   <div class="d-flex align-items-center justify-content-between">
@@ -39,7 +116,7 @@
             <div class="card-body">
               <div class="table-responsive h4">
                 <table class="table">
-                  <thead class=" text-primary">
+                  <thead class="text-danger">
                   <tr>
                     <th>ID</th>
                     <th>Name</th>
@@ -52,7 +129,7 @@
                       <td>{{ printer.id }}</td>
                       <td>
                         <a href="{% url 'production:printer-detail' pk=printer.id %}"
-                           class="page-link text-primary"
+                           class="page-link text-danger"
                         >
                           {{ printer.full_name }}
                         </a>
@@ -61,7 +138,7 @@
                         <ul class="list-unstyled">
                           {% for material in printer.materials.all %}
                             <li>
-                              <a href="{{ material.get_absolute_url }}">
+                              <a class="text-danger" href="{{ material.get_absolute_url }}">
                                 {{ material.name }}
                               </a>
                             </li>
@@ -79,75 +156,7 @@
             </div>
           </div>
         {% else %}
-          <p class="text-danger">There are no printers yet!</p>
-        {% endif %}
-      </div>
-      <hr>
-      <br>
-      <div>
-        {% if workplace.print_queues.exists %}
-          <div class="card card-plain">
-            <div class="card-header card-header-tabs card-header-primary rounded">
-              <div class="nav-tabs-navigation">
-                <div class="nav-tabs-wrapper">
-                  <div class="d-flex align-items-center justify-content-between">
-                    <h1 class="nav-tabs-title">Print Queues</h1>
-                    {% if user in workplace.workers.all or user.is_staff %}
-                      <ul class="nav nav-tabs" data-tabs="tabs">
-                        <li class="nav-item">
-                          <a class="nav-link active"
-                             href="{% url "production:print-queue-create" pk=workplace.id %}"
-                             title="Add print queue"
-                          >
-                            <i class="material-icons">add</i>
-                          </a>
-                        </li>
-                      </ul>
-                    {% endif %}
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="card-body">
-              <div class="table-responsive h4">
-                <table class="table">
-                  <thead class=" text-primary">
-                  <tr>
-                    <th>ID</th>
-                    <th>Material</th>
-                    <th>Creation Time</th>
-                    <th>Square meters</th>
-                  </tr>
-                  </thead>
-                  <tbody>
-                  {% for print_queue in workplace.print_queues.all %}
-                    <tr>
-                      <td>
-                        <a class="page-link text-primary"
-                           href="{% url 'production:print-queue-detail' pk=print_queue.id %}">{{ print_queue.id }}</a>
-                      </td>
-                      <td>{{ print_queue.material.name }}</td>
-                      <td>{{ print_queue.creation_time }}</td>
-                      <td>{{ print_queue.summary.total_area }} m²</td>
-                    </tr>
-                  {% endfor %}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        {% else %}
-          <div class="d-flex align-items-center justify-content-between">
-            <h2 class="text-danger mr-3"> There are no print queues yet! </h2>
-            {% if user.is_staff or user in workplace.workers %}
-              <a class="btn btn-primary btn-sm"
-                 href="{% url "production:print-queue-create" pk=workplace.id %}" 
-                 title="Add print queue"
-              >
-                <i class="material-icons">add</i>
-              </a>
-            {% endif %}
-          </div>
+          <h2 class="text-danger">There are no printers yet!</h2>
         {% endif %}
       </div>
       <hr>
@@ -155,7 +164,7 @@
       <div>
         {% if workplace.workers.exists %}
           <div class="card card-plain">
-            <div class="card-header card-header-tabs card-header-primary rounded">
+            <div class="card-header card-header-tabs card-header-danger rounded">
               <div class="nav-tabs-navigation">
                 <div class="nav-tabs-wrapper">
                   <div class="d-flex align-items-center justify-content-between">
@@ -167,7 +176,7 @@
             <div class="card-body">
               <div class="table-responsive h4">
                 <table class="table">
-                  <thead class=" text-primary">
+                  <thead class=" text-danger">
                   <tr>
                     <th>ID</th>
                     <th>Username</th>
@@ -181,7 +190,7 @@
                       <td>{{ worker.id }}</td>
                       <td>
                         <a href="{{ worker.get_absolute_url }}"
-                           class="page-link text-primary"
+                           class="page-link text-danger"
                         >
                           {{ worker.username }}
                         </a>
