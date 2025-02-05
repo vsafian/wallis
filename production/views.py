@@ -7,7 +7,9 @@ from django.http import HttpRequest, HttpResponse
 from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views import generic
+from django_filters.views import FilterView
 
+from production.filters import OrderFilter
 from production.forms import (
     WorkerCreateForm,
     WorkerPhoneNumberForm,
@@ -312,7 +314,8 @@ class OrderDetailView(
 
 class OrderListView(
     LoginRequiredMixin,
-    ListViewSearchMixin
+    FilterView,
+    ListViewSearchMixin,
 ):
     model = Order
     paginate_by = 16
@@ -322,6 +325,10 @@ class OrderListView(
         Order.objects.prefetch_related("material")
         .all()
     )
+    template_name = "production/order_list.html"
+    context_object_name = "order_list"
+    filterset_class = OrderFilter
+
 
 
 class PrintQueueCreateView(
@@ -347,7 +354,6 @@ class PrintQueueCreateView(
         if "form" not in context:
             context["form"] = form
 
-        context["workplace"] = self.workplace
         context.update(
             create_summary_context(context.get("form"))
         )
@@ -355,7 +361,7 @@ class PrintQueueCreateView(
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        kwargs["workplace"] = self.workplace
+        kwargs["cached_workplace"] = self.workplace
         return kwargs
 
 
@@ -388,5 +394,5 @@ class PrintQueueUpdateView(
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        kwargs["item"] = self.print_queue
+        kwargs["cached_instance"] = self.print_queue
         return kwargs

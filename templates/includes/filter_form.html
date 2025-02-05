@@ -1,0 +1,14 @@
+<div>
+  <form method="get">
+    {% for field in filter.form %}
+      <div class="form-inline">
+        <label class="text-secondary mr-2" for="{{ field.id_for_label }}">{{ field.label }}</label>
+        <div class="ml-2 mb-2">{{ field }}</div>
+      </div>
+    {% endfor %}
+    <button type="submit"
+            class="btn btn-sm btn-default"
+    ><i class="material-icons">search</i> Apply Filter
+    </button>
+  </form>
+</div>
