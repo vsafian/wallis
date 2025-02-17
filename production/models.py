@@ -7,8 +7,16 @@ from django.conf import settings
 
 from production.calculations import PrintQueueSummary
 
+from production.status_objects import (
+    PrintStatusMixin,
+    PrinterStatusMixin
+)
 
-class Workplace(models.Model, ModelAbsoluteUrlMixin):
+
+class Workplace(
+    models.Model,
+    ModelAbsoluteUrlMixin
+):
     name = models.CharField(max_length=100)
     view_name = "production:workplace-detail"
 
@@ -19,9 +27,10 @@ class Workplace(models.Model, ModelAbsoluteUrlMixin):
         return self.name
 
 
-
-
-class Worker(AbstractUser, ModelAbsoluteUrlMixin):
+class Worker(
+    AbstractUser,
+    ModelAbsoluteUrlMixin
+):
     phone_number = models.CharField(
         max_length=13, null=True, blank=True,
         validators=[
@@ -74,9 +83,15 @@ class Material(
 
 
 class Printer(
+    PrinterStatusMixin,
     models.Model,
     ModelAbsoluteUrlMixin,
 ):
+    status = models.CharField(
+        max_length=20,
+        choices=PrinterStatusMixin.STATUS_CHOICES,
+        default=PrinterStatusMixin.ACTIVE
+    )
     name = models.CharField(
         max_length=100, unique=False
     )
@@ -92,7 +107,6 @@ class Printer(
         on_delete=models.SET_NULL,
         null=True, blank=True
     )
-
     view_name = "production:printer-detail"
 
     class Meta:
@@ -107,23 +121,33 @@ class Printer(
 
 
 class PrintQueue(
+    PrintStatusMixin,
     models.Model,
     ModelAbsoluteUrlMixin
 ):
-    workplace = models.ForeignKey(
-        Workplace,
-        related_name="print_queues",
-        on_delete=models.CASCADE,
+    status = models.CharField(
+        max_length=50,
+        choices=PrintStatusMixin.STATUS_CHOICES,
+        default=PrintStatusMixin.READY_TO_PRINT
     )
-
     material = models.ForeignKey(
         Material,
         on_delete=models.CASCADE,
         related_name='print_queues',
     )
-
+    workplace = models.ForeignKey(
+        Workplace,
+        related_name="print_queues",
+        on_delete=models.CASCADE,
+    )
     creation_time = models.DateTimeField(
         auto_now_add=True,
+    )
+    printer = models.ForeignKey(
+        Printer,
+        related_name='print_queues',
+        on_delete=models.CASCADE,
+        blank=True, null=True,
     )
     view_name = "production:print-queue-detail"
 
@@ -140,9 +164,15 @@ class PrintQueue(
 
 
 class Order(
+    PrintStatusMixin,
     models.Model,
     ModelAbsoluteUrlMixin,
 ):
+    status = models.CharField(
+        max_length=50,
+        choices=PrintStatusMixin.STATUS_CHOICES,
+        default=PrintStatusMixin.READY_TO_PRINT
+    )
     code = models.CharField(
         max_length=100, unique=True,
         validators=[RegexValidator(
