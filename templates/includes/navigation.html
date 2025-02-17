@@ -7,9 +7,9 @@
       </a>
     </div>
     {% if search_form %}
-    <div class="navbar-wrapper navbar-collapse justify-content-end">
-      {% include "includes/search_form.html" %}
-    </div>
+      <div class="navbar-wrapper navbar-collapse justify-content-end">
+        {% include "includes/search_form.html" %}
+      </div>
     {% endif %}
     <div class="collapse navbar-collapse justify-content-end">
       <ul class="navbar-nav">
@@ -28,16 +28,6 @@
                 <input class="dropdown-form-input p-0" type="submit" value="Logout">
               </label>
             </form>
-          </div>
-        </li>
-        <li class="nav-item dropdown">
-          <a class="nav-link" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown"
-             aria-haspopup="true" aria-expanded="false">
-            <i class="material-icons">notifications</i>
-            <span class="notification">1</span>
-          </a>
-          <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
-            <a class="dropdown-item" href="#">Notification</a>
           </div>
         </li>
       </ul>

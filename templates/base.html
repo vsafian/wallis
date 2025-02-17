@@ -41,16 +41,18 @@
   {% block stylesheets %}{% endblock stylesheets %}
 </head>
 <body class="">
-<div class="wrapper ">
+<div class="wrapper">
   {% block sidebar %}
     {% include 'includes/sidebar.html' %}
   {% endblock %}
   <div class="main-panel">
-    {% block navigation %}
-      {% include 'includes/navigation.html' %}
-    {% endblock %}
+    <div class="mb-5">
+      {% block navigation %}
+        {% include 'includes/navigation.html' %}
+      {% endblock %}
+    </div>
     <!-- End Navbar -->
-    <div class="content">
+    <div class="content mt-0">
       <div class="container-fluid">
         {% block content %}{% endblock content %}
       </div>

@@ -1,56 +1,149 @@
 {% extends "base.html" %}
 {% block content %}
-  <hr>
   <div class="d-flex justify-content-between align-items-center">
     <h1>
       Order: #{{ order.code }}
     </h1>
     {% if user.is_staff %}
-      <a class="btn btn-danger btn-sm"
-         href="#"
-         title="Delete Order"
-      >
-        <i class="material-icons">delete</i>
-      </a>
+      {% if order.is_deletable %}
+        <a class="btn btn-danger btn-sm"
+           href="#"
+           title="Delete Order"
+        >
+          <i class="material-icons">delete</i>
+        </a>
+      {% endif %}
     {% endif %}
   </div>
   <hr>
   <div>
-    <h2>Base information:</h2>
-    <br>
-    <p><strong>Owner:</strong> {{ order.owner_full_name }}</p>
-    <p><strong>Manager:</strong> {{ order.manager }}</p>
-    <p><strong>Post:</strong> {{ order.country_post }}</p>
-    <p><strong>Creation time:</strong> {{ order.creation_time }}</p>
-    <p><strong>Comment:</strong> {{ order.comment }}</p>
+    <h3><strong>Base information:</strong></h3>
+    <table class="table">
+      <tr>
+        <th>Owner</th>
+        <td>{{ order.owner_full_name }}</td>
+      </tr>
+      <tr>
+        <th>Manager</th>
+        <td>{{ order.manager }}</td>
+      </tr>
+      <tr>
+        <th>Post</th>
+        <td>{{ order.country_post }}</td>
+      </tr>
+      <tr>
+        <th>Creation time</th>
+        <td>{{ order.creation_time }}</td>
+      </tr>
+      <tr>
+        <th>Comment</th>
+        <td>{{ order.comment }}</td>
+      </tr>
+      <tr>
+        <th>Status</th>
+        <td>
+          <div class="d-flex justify-content-between align-items-center">
+            {{ order.get_status_display }}
+            {% if order.is_editable %}
+              <a href="{% url 'production:change-order-status' pk=order.pk %}"
+                 class="btn btn-sm mr-2 {% if order.is_printable %} btn-danger {% else %} btn-primary {% endif %}">
+                {% if order.is_printable %}
+                  Mark as Problem
+                {% else %}
+                  Mark as Ready
+                {% endif %}
+              </a>
+            {% endif %}
+          </div>
+        </td>
+      </tr>
+    </table>
+  </div>
+  <div>
+    <h3><strong>Production details:</strong></h3>
+    <table class="table">
+      <tr>
+        <th>Image</th>
+        <td>
+          <div class="d-flex justify-content-between align-items-baseline">
+            {{ order.image_name }}
+            <a href="#"
+               class="btn btn-sm btn-success mr-2"
+               title="Open image"
+            >Open
+            </a>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <th>Material</th>
+        <td>{{ order.material }}</td>
+      </tr>
+      <tr>
+        <th>Square meters</th>
+        <td>{{ order.square_meters }} m²</td>
+      </tr>
+      <tr>
+        <th>Tiles count</th>
+        <td>{{ order.tiles_count }}</td>
+      </tr>
+      <tr>
+        <th>Wide tile width</th>
+        <td>{{ order.wide_tile_width }} mm.</td>
+      </tr>
+      <tr>
+        <th>Narrow tile width</th>
+        <td>{{ order.narrow_tile_width }} mm.</td>
+      </tr>
+    </table>
+  </div>
+  <div>
+    <h3><strong>Performing details:</strong></h3>
+    <table class="table">
+      <tr>
+        <th>Print Queue</th>
+        <td class="text-center">
+          {% if order.print_queue %}
+            <div class="d-flex justify-content-between align-items-center">
+              #{{ order.print_queue.id }}
+              <a class="btn btn-sm btn-warning mr-2"
+                 href="{% url 'production:print-queue-detail' pk=order.print_queue.id %}"
+                 title="Open print queue"
+              >Open
+              </a>
+            </div>
+          {% else %}
+            {{ order.print_queue }}
+          {% endif %}
+        </td>
+      </tr>
+      <tr>
+        <th>Performed by</th>
+        <td class="text-center">
+          {% if order.performer %}
+            <a class="page-link text-primary"
+               href="{% url 'production:worker-detail' pk=order.performer.id %}"
+            >{{ order.performer }}
+            </a>
+          {% else %}
+            {{ order.performer }}
+          {% endif %}
+        </td>
+      </tr>
+      <tr>
+        <th>Performing time</th>
+        <td class="text-center">
+          {{ order.performing_time }}
+        </td>
+      </tr>
+    </table>
   </div>
   <hr>
   <div>
-    <h2>Production details:</h2>
-    <p><strong>Image:</strong> {{ order.image_name }}</p>
-    <p><strong>Material:</strong> {{ order.material }}</p>
-    <p><strong>Square meters:</strong> {{ order.square_meters }} m².</p>
-    <p><strong>Tiles count:</strong> {{ order.tiles_count }}</p>
-    <p><strong>Wide tile width:</strong> {{ order.wide_tile_width }} mm.</p>
-    <p><strong>Narrow tile width:</strong> {{ order.narrow_tile_width }} mm.</p>
-  </div>
-  <hr>
-  <div>
-    <h2>Performing details:</h2>
-    <p class="d-flex align-items-baseline"><strong>Print Queue:&nbsp;</strong>
-      {% if order.print_queue %}
-        <a class="page-link pl-0" href="{% url 'production:print-queue-detail' pk=order.print_queue.id %}"
-        >#{{ order.print_queue.id }}</a>
-      {% else %}
-        {{ order.print_queue }}
-      {% endif %}
-    </p>
-    <p><strong>Performed by:</strong> {{ order.performer }}</p>
-    <p><strong>Performing time:</strong> {{ order.performing_time }}</p>
-  </div>
-  <hr>
-  <div>
-    <a class="btn-link page-link" href="{% url 'production:order-list' %}"> < Back to Orders List</a>
+    <a href="{% url 'production:order-list' %}"
+       class="btn bg-inverse"
+    >< Back to Order List
+    </a>
   </div>
 {% endblock %}
 

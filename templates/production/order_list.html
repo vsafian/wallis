@@ -36,6 +36,7 @@
                   <th>Material</th>
                   <th>Tiles count</th>
                   <th>Square meters</th>
+                  <th>Status</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -51,6 +52,7 @@
                     <td>{{ order.material.name }}</td>
                     <td>{{ order.tiles_count }}</td>
                     <td>{{ order.square_meters }} m²</td>
+                    <td>{{ order.get_status_display }}</td>
                   </tr>
                 {% endfor %}
                 </tbody>

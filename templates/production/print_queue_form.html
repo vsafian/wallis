@@ -2,12 +2,6 @@
 {% block content %}
   <h1>{{ object|yesno:"Update,Create new" }} print queue{{ object|yesno:":," }}
     {% if object %}{{ object }}{% endif %}</h1>
-  {% if workplace %}
-    <div>
-      <hr>
-      <h3>Workplace: {{ workplace }}</h3>
-    </div>
-  {% endif %}
   {% include "includes/summary.html" %}
   {% include "includes/form.html" %}
   {% if workplace %}

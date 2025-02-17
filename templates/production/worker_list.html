@@ -47,7 +47,16 @@
                     <td>{{ worker.first_name }}</td>
                     <td>{{ worker.last_name }}</td>
                     <td>{{ worker.phone_number }}</td>
-                    <td>{{ worker.workplace }}</td>
+                    <td>
+                      {% if worker.workplace %}
+                        <a class="page-link text-primary"
+                          href="{% url 'production:workplace-detail' pk=worker.workplace.id %}"
+                        >{{ worker.workplace }}
+                        </a>
+                        {% else %}
+                        {{ worker.workplace }}
+                      {% endif %}
+                    </td>
                   </tr>
                 {% endfor %}
                 </tbody>
