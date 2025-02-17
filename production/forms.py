@@ -2,9 +2,18 @@ from django import forms
 from django.contrib.auth.forms import (
     UserCreationForm
 )
-from django.db import transaction
 
-from .mixins import FormFieldMixin
+from .mixins import (
+    FormFieldMixin,
+    FormSaveForeignMixin
+)
+from .services import (
+    foreign_case_help_text,
+    filter_orders_by_materials,
+    fiter_workplaces_by_printers_materials,
+    filter_materials_by_printers, filter_orders_by_ready_or_problem_relative,
+)
+
 from .models import (
     Worker,
     Workplace,
@@ -12,11 +21,6 @@ from .models import (
     Material,
     PrintQueue,
     Order
-)
-
-from .services import (
-    set_remove_foreign_by_cleaned_data_and_instance,
-    foreign_case_help_text,
 )
 
 
@@ -39,7 +43,7 @@ class WorkerPhoneNumberForm(forms.ModelForm):
 
 class WorkplaceForm(
     FormFieldMixin,
-    forms.ModelForm
+    FormSaveForeignMixin
 ):
     printers = forms.ModelMultipleChoiceField(
         queryset=Printer.objects.all(),
@@ -51,6 +55,7 @@ class WorkplaceForm(
         widget=forms.CheckboxSelectMultiple(),
         required=False
     )
+    related_models = [Printer, Worker]
 
     class Meta:
         model = Workplace
@@ -58,11 +63,9 @@ class WorkplaceForm(
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.configure_widget_attrs(
+        self.set_form_widget_css(
             field_name="name",
-            attrs={
-                "class": "form-control textinput"
-            }
+            css_class="form-control textinput"
         )
         self.initialize()
 
@@ -74,21 +77,8 @@ class WorkplaceForm(
                 instance_name="workplace"
             )
             self.filter_field_queryset_by_instance(field_name)
-            self.set_initial_default_queryset(field_name)
+            self.set_initial_default_for_related_field(field_name)
 
-    def save(self, commit=True):
-        instance = super().save(commit=False)
-        if commit:
-            with transaction.atomic():
-                instance.save()
-                for model in [Printer, Worker]:
-                    set_remove_foreign_by_cleaned_data_and_instance(
-                        model_to_update=model,
-                        cleaned_data=self.cleaned_data,
-                        instance=instance,
-
-                    )
-        return instance
 
 class MaterialForm(forms.ModelForm):
     class Meta:
@@ -111,90 +101,105 @@ class PrinterForm(
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        attrs = {"class": "form-control textinput"}
-        for field in ["name", "model"]:
-            self.configure_widget_attrs(
-                field_name=field,
-                attrs=attrs
+        for field_name in ["name", "model"]:
+            self.set_form_widget_css(
+                field_name=field_name,
+                css_class="form-control textinput"
             )
-        self.configure_widget_attrs(
+        self.set_form_widget_css(
             field_name="workplace",
-            attrs={
-                "class": "select form-control"
-            }
+            css_class="select form-control"
         )
 
 
 class PrintQueueCreateForm(
     FormFieldMixin,
-    forms.ModelForm
+    FormSaveForeignMixin
 ):
+    """
+    PrintQueueCreateForm:
+    - Allows creating a PrintQueue for a given workplace.
+    - Filters available materials by printers assigned to the workplace.
+    - Filters available orders based on selected material.
+    - Uses `FormSaveForeignMixin` to manage Many-to-One relationships.
+
+    Restrictions:
+    - The workplace is pre-filled and cannot be changed.
+    - At least one order must be selected.
+    - The selected orders must match the selected material.
+    """
     orders = forms.ModelMultipleChoiceField(
         queryset=(
             Order.objects
             .select_related("material")
-            .filter(print_queue=None)
+            .filter(
+                print_queue=None,
+                status=Order.READY_TO_PRINT
+            )
         ),
         widget=forms.CheckboxSelectMultiple(),
+        required=True,
         error_messages={
             "required": (
                 "Please select at least one order!"
             ),
-            "invalid_choice": (
-                "There are no available orders yet, "
-                "please select other material!"
-            )
+            "invalid_choice": ""
         }
     )
+    related_models = [Order]
 
     class Meta:
         model = PrintQueue
-        fields = ("material",)
+        fields = ["workplace", "material"]
 
     def __init__(self, *args, **kwargs):
-        self.workplace = kwargs.pop("workplace", None)
-        self.printers = (
-            Printer.objects
-            .select_related('workplace')
-            .all()
-        )
+        self.cached_workplace = kwargs.pop("cached_workplace", None)
         super().__init__(*args, **kwargs)
-
-        self.configure_widget_attrs(
-            field_name="material",
-            attrs={
-                "onchange": "this.form.submit();",
-                "class": "select form-control",
-            }
-        )
-        self.configure_widget_attrs(
-            field_name="orders",
-            attrs={
-                "onchange": "this.form.submit();",
-            }
-        )
-        self.setup_material_queryset()
+        for field_name in ["material", "workplace"]:
+            self.set_form_widget_css(
+                field_name=field_name,
+                css_class="select form-control"
+            )
+        for field_name in ["orders", "material"]:
+            self.set_field_pseudo_dynamic(
+                field_name=field_name
+            )
+        self.initialize()
 
     def setup_material_queryset(self):
         materials_field = self.fields['material']
         orders_field = self.fields['orders']
-        printers = self.printers.filter(
-            workplace=self.workplace
-        )
-        materials_field.queryset = materials_field.queryset.filter(
-            printers__in=printers
-        ).distinct()
 
-        orders_field.queryset = orders_field.queryset.filter(
-            material__in=materials_field.queryset
-        ).order_by("creation_time")
+        printers = self.cached_workplace.printers.filter(
+            status=Printer.ACTIVE
+        )
+
+        materials_field.queryset = filter_materials_by_printers(
+            materials=materials_field.queryset,
+            printers=printers
+        )
+
+        orders_field.queryset = filter_orders_by_materials(
+            orders=orders_field.queryset,
+            materials=materials_field.queryset
+        )
+
+    def initialize(self):
+        self.disable_field("workplace")
+        self.setup_material_queryset()
+        self.initial.setdefault("workplace", self.cached_workplace)
 
     def clean_material(self):
         material = self.cleaned_data["material"]
         orders_field = self.fields['orders']
-        orders_field.queryset = orders_field.queryset.filter(
-            material=material
+        orders_field.queryset = filter_orders_by_materials(
+            orders=orders_field.queryset,
+            materials=[material]
         )
+        if not orders_field.queryset:
+            raise forms.ValidationError(
+                "Please select any other material!"
+            )
         return material
 
     def clean_orders(self):
@@ -206,23 +211,10 @@ class PrintQueueCreateForm(
             )
         return orders
 
-    def save(self, commit=True):
-        instance = super().save(commit=False)
-        instance.workplace = self.workplace
-        if commit:
-            with transaction.atomic():
-                instance.save()
-                set_remove_foreign_by_cleaned_data_and_instance(
-                    model_to_update=Order,
-                    cleaned_data=self.cleaned_data,
-                    instance=instance,
-                )
-        return instance
-
 
 class PrintQueueUpdateForm(
     FormFieldMixin,
-    forms.ModelForm
+    FormSaveForeignMixin
 ):
     orders = forms.ModelMultipleChoiceField(
         queryset=(
@@ -232,74 +224,73 @@ class PrintQueueUpdateForm(
         ),
         widget=forms.CheckboxSelectMultiple(),
     )
+    related_models = [Order]
 
     class Meta:
         model = PrintQueue
-        fields = "__all__"
+        fields = ["material", "workplace"]
 
     def __init__(self, *args, **kwargs):
-        self.item = kwargs.pop("item", None)
+        self.cached_instance = kwargs.pop("cached_instance", None)
         super().__init__(*args, **kwargs)
-        self.configure_widget_attrs(
-            field_name="orders",
-            attrs={
-                "onchange": "this.form.submit();",
-            }
-        )
         self.initialize()
 
-    def set_instance(self, instance):
+    def set_defaults_from_cache(self):
         if not self.instance.pk:
-            self.instance = instance
-
-    def setup_orders_queryset(self):
-        orders = self.get_field("orders")
-        orders.queryset = orders.queryset.filter(
-            material=self.item.material
-        ).order_by("creation_time")
-        self.filter_field_queryset_by_instance("orders")
-        self.set_initial_default_queryset("orders")
-
-    def setup_workplace_queryset(self):
-        workplace = self.get_field("workplace")
-        workplace.queryset = workplace.queryset.filter(
-         printers__materials__in=[self.item.material]
-        ).distinct()
+            self.initial.setdefault(
+                "workplace", self.cached_instance.workplace
+            )
+            self.initial.setdefault(
+                "material", self.cached_instance.material
+            )
+            self.instance = self.cached_instance
 
     def initialize(self):
+        self.set_field_pseudo_dynamic("orders")
+        self.disable_field("material")
+        for field_name in ["workplace", "material"]:
+            self.set_form_widget_css(
+                field_name=field_name,
+                css_class="select form-control"
+            )
+        self.set_defaults_from_cache()
         self.setup_orders_queryset()
         self.setup_workplace_queryset()
 
-        material = self.get_field("material")
-        material.disabled = True
+    def setup_orders_queryset(self):
+        orders = self.get_field("orders")
+        self.filter_field_queryset_by_instance("orders")
+        orders.queryset = filter_orders_by_materials(
+            orders=orders.queryset,
+            materials=[self.instance.material]
+        )
+        orders.queryset = filter_orders_by_ready_or_problem_relative(
+            orders=orders.queryset,
+            print_queue=self.instance
+        )
+        self.set_initial_default_for_related_field("orders")
 
-        for field_name in ["workplace", "material"]:
-            self.configure_widget_attrs(
-                field_name=field_name,
-                attrs={"class": "select form-control"}
-            )
+    def setup_workplace_queryset(self):
+        workplace = self.get_field("workplace")
+        workplace.queryset = fiter_workplaces_by_printers_materials(
+            workplaces=workplace.queryset,
+            materials=[self.instance.material]
+        )
 
-        if not self.instance.pk:
-            self.initial.setdefault("workplace", self.item.workplace)
-            self.initial.setdefault("material", self.item.material)
-            self.set_instance(self.item)
+    def track_problem_orders(self, orders):
+        problem_orders = orders.filter(status=Order.PROBLEM)
+        if not problem_orders:
+            self.instance.status = Order.READY_TO_PRINT
 
-    def save(self, commit=True):
-        instance = super().save(commit=False)
-        if commit:
-            with transaction.atomic():
-                instance.save()
-                set_remove_foreign_by_cleaned_data_and_instance(
-                        model_to_update=Order,
-                        cleaned_data=self.cleaned_data,
-                        instance=instance
-                )
-        return instance
+    def clean_orders(self):
+        orders = self.cleaned_data.get("orders", Order.objects.none())
+        self.track_problem_orders(orders)
+        return orders
 
 
 class NameFieldSearchForm(
     forms.Form,
-    ):
+):
     name = forms.CharField(
         max_length=255,
         required=False,
@@ -318,7 +309,7 @@ class OrderSearchForm(
         required=False,
         label="",
         widget=forms.TextInput(
-            attrs={"placeholder": "Search by code"}
+            attrs={"placeholder": "Search by order code"}
         )
     )
 
@@ -326,11 +317,24 @@ class OrderSearchForm(
 class WorkerSearchForm(
     forms.Form,
 ):
-  username = forms.CharField(
-      max_length=255,
-      required=False,
-      label="",
-      widget=forms.TextInput(
-          attrs={"placeholder": "Search by username"}
-      )
-  )
+    username = forms.CharField(
+        max_length=255,
+        required=False,
+        label="",
+        widget=forms.TextInput(
+            attrs={"placeholder": "Search by username"}
+        )
+    )
+
+
+class IDSearchForm(
+    forms.Form,
+):
+    id = forms.CharField(
+        max_length=255,
+        required=False,
+        label="",
+        widget=forms.TextInput(
+            attrs={"placeholder": "Search by id"}
+        )
+    )

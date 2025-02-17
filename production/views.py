@@ -1,15 +1,18 @@
 from copy import copy
+from datetime import timedelta
 
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db.models import QuerySet, Q
-from django.http import HttpRequest, HttpResponse
-from django.shortcuts import render
+from django.db.models import QuerySet, Q, Count
+from django.db.models.functions import TruncDay
+from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
+from django.shortcuts import render, get_object_or_404
 from django.urls import reverse_lazy
+from django.utils.timezone import now
 from django.views import generic
 from django_filters.views import FilterView
 
-from production.filters import OrderFilter
+from production.filters import OrderFilter, PrintQueueFilter
 from production.forms import (
     WorkerCreateForm,
     WorkerPhoneNumberForm,
@@ -25,7 +28,7 @@ from production.forms import (
 
     NameFieldSearchForm,
     OrderSearchForm,
-    WorkerSearchForm,
+    WorkerSearchForm, IDSearchForm,
 )
 
 from production.mixins import (
@@ -47,16 +50,76 @@ from production.models import (
 
 from production.calculations import create_summary_context
 
-
 @login_required
-def index(request: HttpRequest) -> HttpResponse:
+def index(request):
     """View function for the home page of the site."""
-    context = {
+    today = now().date()
+    workplaces_leaderboard = (
+        Workplace.objects
+        .filter(
+            print_queues__status=PrintQueue.DONE,
+            print_queues__orders__performing_time__date=today
+        )
+        .annotate(
+            completed_orders_count=Count(
+                "print_queues__orders",
+                filter=Q(print_queues__orders__status=PrintQueue.DONE,
+                         print_queues__orders__performing_time__date=today),
+                distinct=True
+            )
+        )
+        .distinct()
+        .order_by("-completed_orders_count")
+    )
+    orders = Order.objects.all()
+
+    seven_days_ago = now().date() - timedelta(days=6)
+    weekly_orders_data = (
+        orders.filter(
+            status=Order.DONE,
+            performing_time__date__gte=seven_days_ago
+        )
+        .annotate(day=TruncDay("performing_time"))
+        .values("day")
+        .annotate(count=Count("id"))
+        .order_by("day")
+    )
+
+    weekly_orders = [0] * 7
+    day_to_index = {
+        (seven_days_ago + timedelta(days=i)): i for i in range(7)
     }
+
+    for entry in weekly_orders_data:
+        day = entry["day"].date()
+        if day in day_to_index:
+            weekly_orders[day_to_index[day]] = entry["count"]
+
+    num_daily_done_orders = orders.filter(
+        status=Order.DONE,
+        performing_time__date=today
+    ).count()
+
+    num_problem_orders = orders.filter(
+        status=Order.PROBLEM,
+    ).count()
+
+    num_orders_to_close = orders.filter(
+        status=Order.READY_TO_PRINT
+    ).count()
+
+    context = {
+        "workplaces": workplaces_leaderboard,
+        "weekly_orders": [weekly_orders],
+        "problem_orders": num_problem_orders,
+        "num_orders_to_close": num_orders_to_close,
+        "num_daily_done_orders": num_daily_done_orders,
+    }
+
     return render(
         request,
         "production/index.html",
-        context=context
+        context
     )
 
 
@@ -103,7 +166,7 @@ class WorkerListView(
     paginate_by = 14
     search_form = WorkerSearchForm
     search_field = "username"
-    search_queryset = (
+    queryset = (
         Worker.objects.select_related("workplace")
         .all()
     )
@@ -117,9 +180,11 @@ class WorkplaceListView(
     paginate_by = 12
     search_form = NameFieldSearchForm
     search_field = "name"
-    search_queryset = (
-        Workplace.objects.prefetch_related("workers")
-        .all()
+    queryset = (
+        Workplace.objects
+        .prefetch_related(
+            "workers", "printers", "print_queues"
+        ).all()
     )
 
 
@@ -148,12 +213,37 @@ class WorkplaceDetailView(
     generic.DetailView,
 ):
     model = Workplace
-    queryset = (
-        Workplace.objects
-        .prefetch_related("workers")
-        .prefetch_related("printers", "printers__materials")
-        .all()
-    )
+    queryset = Workplace.objects.all()
+
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        workplace = self.get_object()
+
+        print_queues = (PrintQueue.objects
+        .prefetch_related("material")
+        .filter(
+            status__in= [
+            PrintQueue.READY_TO_PRINT,
+            PrintQueue.PROBLEM,
+            PrintQueue.IN_PROGRESS
+        ],
+            workplace=workplace,
+        ))
+
+        printers = (Printer.objects
+        .prefetch_related("materials")
+        .filter(
+            workplace=workplace,
+        ))
+
+        workers = Worker.objects.filter(
+            workplace=workplace,
+        )
+        context["print_queues"] = print_queues
+        context["printers"] = printers
+        context["workers"] = workers
+        return context
 
 
 class WorkplaceDeleteView(
@@ -173,7 +263,7 @@ class MaterialListView(
     paginate_by = 14
     search_form = NameFieldSearchForm
     search_field = "name"
-    search_queryset = Material.objects.all()
+    queryset = Material.objects.all()
 
 
 class MaterialDetailView(
@@ -227,7 +317,7 @@ class PrinterListView(
     paginate_by = 14
     search_form = NameFieldSearchForm
     search_field = "name"
-    search_queryset = (
+    queryset = (
         Printer.objects
         .prefetch_related("materials", "workplace")
         .all()
@@ -236,11 +326,11 @@ class PrinterListView(
     def get_queryset(self) -> QuerySet:
         form = self.search_form(self.request.GET)
         if form.is_valid():
-            return self.search_queryset.filter(
+            return self.queryset.filter(
                 Q(name__icontains=form.cleaned_data["name"]) |
                 Q(model__icontains=form.cleaned_data["name"])
             )
-        return self.search_queryset
+        return self.queryset
 
 
 class PrinterCreateView(
@@ -279,32 +369,6 @@ class PrinterDeleteView(
     template_name = "production/printer_confirm_delete.html"
 
 
-class PrintQueueDetailView(
-    LoginRequiredMixin,
-    generic.DetailView
-):
-    model = PrintQueue
-    template_name = "production/print_queue_detail.html"
-
-
-class PrintQueueListView(
-    LoginRequiredMixin,
-    generic.ListView
-):
-    model = PrintQueue
-    paginate_by = 10
-    template_name = "production/print_queue_list.html"
-
-
-class PrintQueueDeleteView(
-    LoginRequiredMixin,
-    DeleteViewMixin
-):
-    model = PrintQueue
-    success_url = reverse_lazy("production:print-queue-list")
-    template_name = "production/print_queue_confirm_delete.html"
-
-
 class OrderDetailView(
     LoginRequiredMixin,
     generic.DetailView
@@ -321,7 +385,7 @@ class OrderListView(
     paginate_by = 16
     search_form = OrderSearchForm
     search_field = "code"
-    search_queryset = (
+    queryset = (
         Order.objects.prefetch_related("material")
         .all()
     )
@@ -329,6 +393,37 @@ class OrderListView(
     context_object_name = "order_list"
     filterset_class = OrderFilter
 
+
+class PrintQueueListView(
+    LoginRequiredMixin,
+    FilterView,
+    ListViewSearchMixin,
+):
+    model = PrintQueue
+    paginate_by = 10
+    search_form = IDSearchForm
+    search_field = "id"
+    template_name = "production/print_queue_list.html"
+    queryset = (PrintQueue.objects
+                .prefetch_related("workplace", "material", "orders")
+                .all())
+    context_object_name = "printqueue_list"
+    filterset_class = PrintQueueFilter
+
+class PrintQueueDeleteView(
+    LoginRequiredMixin,
+    DeleteViewMixin
+):
+    model = PrintQueue
+    success_url = reverse_lazy("production:print-queue-list")
+    template_name = "production/print_queue_confirm_delete.html"
+
+class PrintQueueDetailView(
+    LoginRequiredMixin,
+    generic.DetailView
+):
+    model = PrintQueue
+    template_name = "production/print_queue_detail.html"
 
 
 class PrintQueueCreateView(
@@ -338,7 +433,6 @@ class PrintQueueCreateView(
     generic.CreateView,
     ViewSuccessUrlMixin,
 ):
-
     model = PrintQueue
     form_class = PrintQueueCreateForm
     template_name = "production/print_queue_form.html"
@@ -396,3 +490,35 @@ class PrintQueueUpdateView(
         kwargs = super().get_form_kwargs()
         kwargs["cached_instance"] = self.print_queue
         return kwargs
+
+
+@login_required
+def change_order_status(request: HttpRequest, pk: int) -> HttpResponse:
+    order = get_object_or_404(
+        Order.objects.prefetch_related("print_queue"), pk=pk
+    )
+    print_queue = order.print_queue
+    order_change_to = {
+        order.READY_TO_PRINT: order.PROBLEM,
+        order.PROBLEM: order.READY_TO_PRINT
+    }
+    if order.is_editable:
+        new_status = order_change_to[order.status]
+        if print_queue and print_queue.is_editable:
+            problem_orders = print_queue.orders.filter(
+                status=order.PROBLEM
+            )
+            if new_status == order.READY_TO_PRINT:
+                if order in problem_orders and problem_orders.count() == 1:
+                    print_queue.status = print_queue.READY_TO_PRINT
+                    print_queue.save()
+            if new_status == order.PROBLEM:
+                if print_queue.status != order.PROBLEM:
+                    print_queue.status = print_queue.PROBLEM
+                    print_queue.save()
+        order.status = new_status
+        order.save()
+
+    return HttpResponseRedirect(
+        order.get_absolute_url()
+    )

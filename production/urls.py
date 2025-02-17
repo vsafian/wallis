@@ -33,7 +33,7 @@ from production.views import (
     OrderDetailView,
     OrderListView,
 
-    PrintQueueDeleteView, PrintQueueCreateView, PrintQueueUpdateView,
+    PrintQueueDeleteView, PrintQueueCreateView, PrintQueueUpdateView, change_order_status,
 
 )
 
@@ -189,6 +189,12 @@ urlpatterns = [
         "orders/<int:pk>/",
         OrderDetailView.as_view(),
         name="order-detail",
+    ),
+
+    path(
+        "orders/<int:pk>/change-status",
+        change_order_status,
+        name="change-order-status",
     ),
 
     path(

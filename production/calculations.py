@@ -1,6 +1,7 @@
 from typing import List, Dict, Union, Any
 from django.forms import BaseForm
 
+from .status_objects import PrintStatusMixin
 
 class PrintQueueSummary:
     def __init__(
@@ -44,6 +45,14 @@ class PrintQueueSummary:
                 warning + "The recommended number "
                           "of tiles must be even!"
             )
+        if self.orders:
+            problem_orders = self.orders.filter(status=PrintStatusMixin.PROBLEM)
+            if problem_orders.exists():
+                messages.append(
+                    warning + "There are problem orders:"
+                )
+                for order in problem_orders:
+                    messages.append(f"{order};")
         return messages
 
     def as_dict(self) -> Dict[str, Union[int, float, List[str]]]:
@@ -59,6 +68,13 @@ class PrintQueueSummary:
             "summary": self.as_dict(),
         }
 
+
+    def set_orders(self, orders: Any):
+        self.orders = orders
+
+    def set_material(self, material: Any):
+        self.material = material
+
     def set_field(self, field_name: str, value: Any):
         if hasattr(self, field_name):
             setattr(self, field_name, value)
@@ -71,17 +87,16 @@ class PrintQueueSummary:
 def create_summary_context(
         form: BaseForm,
 ):
-    """Generate Summary from form context data or initial_contex property."""
-    target_fields = ["orders", "material"]
+    """Generate Summary from form context data or initial_context property."""
     summary = PrintQueueSummary()
     summary_context = {}
     form.is_valid()
-    if hasattr(form, 'cleaned_data'):
+    if hasattr(form, "cleaned_data"):
         summary_context = form.cleaned_data
     elif hasattr(form, "initial_context"):
         summary_context = form.initial_context
-    for field in target_fields:
-        summary.set_field(
-            field, summary_context.get(field, None)
-        )
+    material = summary_context.get("material", None)
+    orders = summary_context.get("orders", None)
+    summary.set_material(material)
+    summary.set_orders(orders)
     return summary.as_context()
