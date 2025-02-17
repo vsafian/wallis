@@ -1,6 +1,8 @@
-from typing import Type
+from typing import Type, Any
 from django.db import models
 from django.db.models import Q, QuerySet
+
+from  .status_objects import PrintStatusMixin
 
 
 def model_name_to_field(
@@ -11,7 +13,9 @@ def model_name_to_field(
     )
 
 
-def model_to_related_name(model: Type[models.Model]) -> str:
+def model_to_plural_related_name(
+        model: Type[models.Model]
+) -> str:
     return "_".join(
         model._meta.verbose_name_plural.split()
     )
@@ -67,7 +71,7 @@ def set_remove_foreign_by_cleaned_data_and_instance(
     If the previously connected objects
     are not in the list of new objects, they will be disconnected.
     """
-    target_related_name = model_to_related_name(
+    target_related_name = model_to_plural_related_name(
         model_to_update
     )
     instance_name = model_name_to_field(instance)
@@ -95,4 +99,40 @@ def set_remove_foreign_by_cleaned_data_and_instance(
 
     model_to_update.objects.bulk_update(
         to_update, [instance_name]
+    )
+
+def  filter_materials_by_printers(
+     materials: QuerySet,
+     printers: Any
+) -> QuerySet:
+    return materials.filter(
+        printers__in=printers
+    ).distinct()
+
+
+def filter_orders_by_materials(
+        orders: QuerySet,
+        materials: QuerySet | list,
+) -> QuerySet:
+    return orders.filter(
+        material__in=materials
+    ).order_by("creation_time")
+
+
+def fiter_workplaces_by_printers_materials(
+        workplaces: QuerySet,
+        materials: QuerySet | list,
+) -> QuerySet:
+    return workplaces.filter(
+        printers__materials__in=materials
+    ).distinct()
+
+
+def filter_orders_by_ready_or_problem_relative(
+        orders: QuerySet,
+        print_queue: Any,
+    ) -> QuerySet:
+    return orders.filter(
+        Q(status=PrintStatusMixin.PROBLEM, print_queue=print_queue) |
+        Q(status=PrintStatusMixin.READY_TO_PRINT)
     )
