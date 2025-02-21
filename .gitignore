@@ -1,3 +1,5 @@
 .idea
 .venv
 **__pycache__
+production/migrations
+db.sqlite3
