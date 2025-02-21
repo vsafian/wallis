@@ -7,7 +7,7 @@
     {% if user.is_staff %}
       {% if order.is_deletable %}
         <a class="btn btn-danger btn-sm"
-           href="#"
+           href="{% url 'production:order-delete' pk=order.id %}"
            title="Delete Order"
         >
           <i class="material-icons">delete</i>
