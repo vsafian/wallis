@@ -9,9 +9,9 @@ class BaseStatus:
         if status and isinstance(status, str):
             return status
         raise ImproperlyConfigured(
-            f"{self.__class__.__name__} should have"
-            f" an attribute <status>!"
+            f"{self.__class__.__name__} should have" f" an attribute <status>!"
         )
+
 
 class PrintStatusMixin(BaseStatus):
     READY_TO_PRINT = "ready_to_print"
@@ -37,7 +37,6 @@ class PrintStatusMixin(BaseStatus):
     def is_printable(self):
         return self.get_status() == self.READY_TO_PRINT
 
-
     @property
     def is_deletable(self) -> bool:
         return self.is_editable
@@ -45,7 +44,6 @@ class PrintStatusMixin(BaseStatus):
     @property
     def is_done(self) -> bool:
         return self.get_status() == self.DONE
-
 
 
 class PrinterStatusMixin(BaseStatus):

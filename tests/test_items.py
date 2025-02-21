@@ -1,33 +1,20 @@
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 
-from production.models import (
-    Workplace,
-    Printer,
-    Material,
-    Order, PrintQueue
-)
+from production.models import Workplace, Printer, Material, Order, PrintQueue
 
 
 class TestItems(TestCase):
 
     def setUp(self):
-        self.admin_user = (get_user_model().objects
-        .create_superuser(
-            username='admin',
-            email='<EMAIL>',
-            password='<PASS*0WORD>'
-        ))
-        self.regular_user = (get_user_model().objects
-        .create_user(
-            username='regular',
-            email='<EMAIL>',
-            password='<PASS*0WORD>'
-        ))
+        self.admin_user = get_user_model().objects.create_superuser(
+            username="admin", email="<EMAIL>", password="<PASS*0WORD>"
+        )
+        self.regular_user = get_user_model().objects.create_user(
+            username="regular", email="<EMAIL>", password="<PASS*0WORD>"
+        )
         self.not_saved_user = get_user_model()(
-            username='not_saved_user',
-            email='<EMAIL>',
-            password='<PASS*0WORD>'
+            username="not_saved_user", email="<EMAIL>", password="<PASS*0WORD>"
         )
         self.workplace1 = Workplace.objects.create(
             name="workplace1",
@@ -36,25 +23,13 @@ class TestItems(TestCase):
             name="workplace2",
         )
         self.material1 = Material.objects.create(
-            name="Material1",
-            type="test",
-            roll_width=1,
-            winding=1,
-            density=1
+            name="Material1", type="test", roll_width=1, winding=1, density=1
         )
         self.material2 = Material.objects.create(
-            name="Material2",
-            type="test",
-            roll_width=1,
-            winding=1,
-            density=1
+            name="Material2", type="test", roll_width=1, winding=1, density=1
         )
         self.material3 = Material.objects.create(
-            name="Material3",
-            type="test",
-            roll_width=1,
-            winding=1,
-            density=1
+            name="Material3", type="test", roll_width=1, winding=1, density=1
         )
         self.printer1 = Printer.objects.create(
             name="Printer1",
@@ -75,10 +50,10 @@ class TestItems(TestCase):
         self.order1_m1 = Order.objects.create(
             code="1134",
             owner_full_name="owner",
-            country_post= "pl-dpd",
-            image_name= "some_name.tiff",
-            width= 227,
-            height= 240,
+            country_post="pl-dpd",
+            image_name="some_name.tiff",
+            width=227,
+            height=240,
             material=self.material1,
         )
         self.order2_m1 = Order.objects.create(

@@ -13,7 +13,7 @@ from django_filters.views import FilterView
 from production.services import (
     filter_queryset_by_instance,
     model_name_to_field,
-    set_remove_foreign_by_cleaned_data_and_instance
+    set_remove_foreign_by_cleaned_data_and_instance,
 )
 
 
@@ -27,27 +27,26 @@ class ModelAbsoluteUrlMixin:
         view_name (str): The name of the URL pattern to reverse.
                          Must be defined in the subclass.
     """
+
     view_name: str = ""
 
     def get_pk(self):
         if hasattr(self, "pk") and self.pk:
             return self.pk
         raise ImproperlyConfigured(
-            f"Model instance: <{self}> "
-            f"should be defined in the data base."
+            f"Model instance: <{self}> " f"should be defined in the data base."
         )
 
     def get_absolute_url(self) -> str:
         if not self.view_name:
             raise ImproperlyConfigured(
-                f"{self.__class__.__name__} "
-                f"must define 'view_name' attribute."
+                f"{self.__class__.__name__} " f"must define 'view_name' attribute."
             )
         return reverse(
             viewname=self.view_name,
             kwargs={
                 "pk": self.get_pk(),
-            }
+            },
         )
 
 
@@ -59,14 +58,10 @@ class ViewSuccessUrlMixin:
     """
 
     def get_success_url(self):
-        if (hasattr(self, "object")
-            and hasattr(self.object, "view_name")):
-            return (
-                self.object.get_absolute_url()
-            )
+        if hasattr(self, "object") and hasattr(self.object, "view_name"):
+            return self.object.get_absolute_url()
         raise ImproperlyConfigured(
-            f"View should have an object attribute"
-            f" and defined view name."
+            f"View should have an object attribute" f" and defined view name."
         )
 
 
@@ -83,16 +78,12 @@ class DeleteViewMixin(generic.DeleteView):
             url = getattr(instance, "get_absolute_url", None)
             if url and callable(url):
                 return HttpResponseRedirect(url())
-            raise Http404(
-                "Object does not have an absolute URL!"
-            )
+            raise Http404("Object does not have an absolute URL!")
         else:
             return super().post(request, *args, **kwargs)
 
 
-class ListViewSearchMixin(
-    generic.ListView
-):
+class ListViewSearchMixin(generic.ListView):
     search_form = None
     search_field: str = None
     queryset: QuerySet = None
@@ -110,20 +101,18 @@ class ListViewSearchMixin(
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
         field = self.request.GET.get(self.search_field, "")
-        context["search_form"] = self.search_form(
-            initial={self.search_field: field}
-        )
+        context["search_form"] = self.search_form(initial={self.search_field: field})
         return context
 
     def get_queryset(self) -> QuerySet:
         form = self.search_form(self.request.GET)
         if form.is_valid():
             search_filter = {
-                f"{self.search_field}__icontains":
-                    form.cleaned_data[self.search_field]
+                f"{self.search_field}__icontains": form.cleaned_data[self.search_field]
             }
             return self.queryset.filter(**search_filter)
         return self.queryset
+
 
 class InstanceCacheMixin:
     model = None
@@ -136,14 +125,7 @@ class InstanceCacheMixin:
         """
         cache_name = f"{model_name_to_field(self.model)}_cached"
         if not hasattr(self, cache_name):
-            setattr(
-                self,
-                cache_name,
-                get_object_or_404(
-                    model,
-                    pk=self.kwargs["pk"]
-                )
-            )
+            setattr(self, cache_name, get_object_or_404(model, pk=self.kwargs["pk"]))
         return getattr(self, cache_name)
 
 
@@ -160,6 +142,7 @@ class FormSaveForeignMixin(forms.ModelForm):
     A mixin that ensures foreign key relations
     are properly updated on save.
     """
+
     related_models: list[Type[models.Model]] = []
 
     def _validate_related_models(self) -> None:
@@ -173,9 +156,9 @@ class FormSaveForeignMixin(forms.ModelForm):
                 f"Define at least one model in {self.__class__.__name__}."
             )
 
-        if not all(isinstance(model, type)
-                and issubclass(model, models.Model)
-                for model in self.related_models
+        if not all(
+            isinstance(model, type) and issubclass(model, models.Model)
+            for model in self.related_models
         ):
             raise ImproperlyConfigured(
                 "`related_models` should contain only Django model classes."
@@ -240,8 +223,8 @@ class FormFieldMixin:
             return self.initial.get(field_name, None)
 
     def set_initial_default_for_related_field(
-            self,
-            field: str,
+        self,
+        field: str,
     ) -> None:
         """
         Validate form instance and set
@@ -250,27 +233,17 @@ class FormFieldMixin:
         instance = self.get_instance()
         if hasattr(self, "initial"):
             if instance and instance.pk:
-                relation_object = getattr(
-                    instance, field
-                )
+                relation_object = getattr(instance, field)
                 if isinstance(relation_object, models.Manager):
-                    self.initial.setdefault(
-                        field, relation_object.all()
-                    )
+                    self.initial.setdefault(field, relation_object.all())
 
     def get_field_queryset(self, field_name: str) -> QuerySet:
         field = self.get_field(field_name)
         if hasattr(field, "queryset"):
             return field.queryset
-        raise ImproperlyConfigured(
-            f"{field_name} should define `queryset` attribute."
-        )
+        raise ImproperlyConfigured(f"{field_name} should define `queryset` attribute.")
 
-    def set_field_queryset(
-            self,
-            field_name: str,
-            queryset: QuerySet
-    ) -> None:
+    def set_field_queryset(self, field_name: str, queryset: QuerySet) -> None:
         field = self.get_field(field_name)
         if hasattr(field, "queryset"):
             setattr(field, "queryset", queryset)
@@ -280,15 +253,15 @@ class FormFieldMixin:
             )
 
     def filter_field_queryset_by_instance(
-            self,
-            field_name: str,
+        self,
+        field_name: str,
     ) -> None:
         self.set_field_queryset(
             field_name=field_name,
             queryset=filter_queryset_by_instance(
                 queryset=self.get_field_queryset(field_name),
                 instance=self.get_instance(),
-            )
+            ),
         )
 
     @property
@@ -316,8 +289,7 @@ class FormFieldMixin:
                             )
             return fields
         raise ImproperlyConfigured(
-            f"{self.__class__.__name__} "
-            f"has not fields attribute."
+            f"{self.__class__.__name__} " f"has not fields attribute."
         )
 
 

@@ -13,7 +13,9 @@ from production.forms import WorkerSearchForm
 from production.mixins import (
     ViewSuccessUrlMixin,
     ListViewSearchMixin,
-    InstanceCacheMixin, FormFieldMixin, FormSaveForeignMixin
+    InstanceCacheMixin,
+    FormFieldMixin,
+    FormSaveForeignMixin,
 )
 from production.models import Workplace, Printer, Worker
 from tests.test_items import TestItems
@@ -30,13 +32,14 @@ class TestModelAbsoluteUrlMixin(TestItems):
             self.not_saved_user.get_pk()
 
         self.assertIn(
-            "Model instance", str(context.exception),
-            "Expected exception to include reference to model instance."
+            "Model instance",
+            str(context.exception),
+            "Expected exception to include reference to model instance.",
         )
         self.assertIn(
             "should be defined in the data base.",
             str(context.exception),
-            "Expected exception to inform about missing database definition."
+            "Expected exception to inform about missing database definition.",
         )
 
     def test_no_view_name_raises_error(self):
@@ -47,8 +50,7 @@ class TestModelAbsoluteUrlMixin(TestItems):
     def test_get_absolute_url(self):
         url = self.regular_user.get_absolute_url()
         expected_url = reverse(
-            "production:worker-detail",
-            kwargs={"pk": self.regular_user.pk}
+            "production:worker-detail", kwargs={"pk": self.regular_user.pk}
         )
         self.assertEqual(url, expected_url)
 
@@ -62,8 +64,7 @@ class TestViewSuccessUrlMixin(TestItems):
     def test_get_success_url_with_object(self):
         self.mixin.object = self.regular_user
         expected_url = reverse(
-            "production:worker-detail",
-            kwargs={"pk": self.regular_user.pk}
+            "production:worker-detail", kwargs={"pk": self.regular_user.pk}
         )
         self.assertEqual(expected_url, self.mixin.get_success_url())
 
@@ -83,9 +84,7 @@ class TestDeleteViewMixin(TestItems):
     def setUp(self):
         super().setUp()
         self.delete_url = reverse(
-            "production:worker-delete",
-            kwargs={"pk": self.regular_user.pk}
-
+            "production:worker-delete", kwargs={"pk": self.regular_user.pk}
         )
         self.client.force_login(self.regular_user)
 
@@ -98,9 +97,7 @@ class TestDeleteViewMixin(TestItems):
         response = self.client.post(self.delete_url, {"confirm": "true"})
         self.assertEqual(response.status_code, 302)
         self.assertFalse(
-            get_user_model().objects
-            .filter(pk=self.regular_user.pk)
-            .exists()
+            get_user_model().objects.filter(pk=self.regular_user.pk).exists()
         )
 
 
@@ -126,9 +123,7 @@ class TestListViewSearchMixin(TestItems):
     def test_search_queryset_filters_correctly(self):
         username = self.regular_user.username
         request = self.factory.get(f"/?username={username}")
-        expected_queryset = self.basic_queryset.filter(
-            username__icontains=username
-        )
+        expected_queryset = self.basic_queryset.filter(username__icontains=username)
         self.view.request = request
         view_queryset = self.view.get_queryset()
         self.assertQuerySetEqual(view_queryset, expected_queryset)
@@ -156,7 +151,7 @@ class TestFormSaveForeignMixin(TestItems):
         printers = forms.ModelMultipleChoiceField(
             queryset=Printer.objects.all(),
             widget=forms.CheckboxSelectMultiple(),
-            required=False
+            required=False,
         )
         related_models = [Printer]
 
@@ -166,10 +161,7 @@ class TestFormSaveForeignMixin(TestItems):
 
     def setUp(self):
         super().setUp()
-        self.form_data = {
-            "name": "Some Workplace",
-            "printers": []
-        }
+        self.form_data = {"name": "Some Workplace", "printers": []}
 
         self.printers = [self.printer1, self.printer2]
         self.instance = self.workplace1
@@ -183,10 +175,7 @@ class TestFormSaveForeignMixin(TestItems):
 
     def test_form_saves_related_objects_when_update_instance_data(self):
         self.form_data["printers"] = self.printers
-        form = self.TestForm(
-            instance=self.instance,
-            data=self.form_data
-        )
+        form = self.TestForm(instance=self.instance, data=self.form_data)
         self.assertTrue(form.is_valid())
         instance = form.save()
         self.assertEqual(self.printers, list(instance.printers.all()))
@@ -195,18 +184,13 @@ class TestFormSaveForeignMixin(TestItems):
         for printer in self.printers:
             printer.workplace = self.instance
             printer.save()
-        form = self.TestForm(
-            instance=self.instance,
-            data=self.form_data
-        )
+        form = self.TestForm(instance=self.instance, data=self.form_data)
         instance = form.save()
         self.assertTrue(form.is_valid())
         self.assertEqual(set(instance.printers.all()), set())
 
     def test_missing_or_invalid_related_models_raises_exception(self):
-        form = self.TestForm(
-            data=self.form_data
-        )
+        form = self.TestForm(data=self.form_data)
         form.related_models = []
         with self.assertRaises(ImproperlyConfigured):
             form.save()
@@ -216,18 +200,15 @@ class TestFormSaveForeignMixin(TestItems):
             form.save()
 
 
-
 class TestFormFieldMixin(TestItems):
 
-    class TestForm(
-        FormFieldMixin,
-        ModelForm
-    ):
+    class TestForm(FormFieldMixin, ModelForm):
         printers = forms.ModelMultipleChoiceField(
             queryset=Printer.objects.all(),
             widget=forms.CheckboxSelectMultiple(),
-            required=False
+            required=False,
         )
+
         class Meta:
             model = Workplace
             fields = "__all__"
@@ -236,9 +217,7 @@ class TestFormFieldMixin(TestItems):
         super().setUp()
         self.test_field_name = "printers"
         self.form_instance = self.workplace1
-        self.form = self.TestForm(
-            instance=self.form_instance
-        )
+        self.form = self.TestForm(instance=self.form_instance)
 
         self.printer1.workplace = self.form_instance
         self.printer1.save()
@@ -246,22 +225,15 @@ class TestFormFieldMixin(TestItems):
         self.printer2.workplace = self.workplace2
         self.printer2.save()
 
-
     def test_get_instance(self):
-        self.assertEqual(
-            self.form.get_instance(), self.form_instance
-        )
+        self.assertEqual(self.form.get_instance(), self.form_instance)
 
     def test_get_field(self):
         expected_field = self.form.fields[self.test_field_name]
-        self.assertEqual(
-            self.form.get_field(self.test_field_name), expected_field
-        )
+        self.assertEqual(self.form.get_field(self.test_field_name), expected_field)
 
     def test_filter_queryset_by_instance(self):
-        self.form.filter_field_queryset_by_instance(
-            self.test_field_name
-        )
+        self.form.filter_field_queryset_by_instance(self.test_field_name)
 
         expected_queryset = Printer.objects.filter(
             Q(workplace=self.form_instance) | Q(workplace=None)
@@ -269,27 +241,13 @@ class TestFormFieldMixin(TestItems):
 
         form_queryset = self.form.fields[self.test_field_name].queryset
 
-        self.assertQuerySetEqual(
-            expected_queryset,
-            form_queryset
-        )
-        self.assertNotIn(
-            self.printer2, form_queryset
-        )
-        self.assertIn(
-            self.printer1, form_queryset
-        )
-
+        self.assertQuerySetEqual(expected_queryset, form_queryset)
+        self.assertNotIn(self.printer2, form_queryset)
+        self.assertIn(self.printer1, form_queryset)
 
     def test_form_initial_context(self):
-        self.form.set_initial_default_for_related_field(
-            self.test_field_name
-        )
-        expected_context = Printer.objects.filter(
-                workplace=self.form_instance
-        )
+        self.form.set_initial_default_for_related_field(self.test_field_name)
+        expected_context = Printer.objects.filter(workplace=self.form_instance)
         self.assertQuerySetEqual(
-            expected_context,
-            self.form.initial_context["printers"]
+            expected_context, self.form.initial_context["printers"]
         )
-

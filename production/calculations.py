@@ -3,32 +3,29 @@ from django.forms import BaseForm
 
 from .status_objects import PrintStatusMixin
 
+
 class PrintQueueSummary:
-    def __init__(
-            self,
-            orders=None,
-            material=None
-    ) -> None:
+    def __init__(self, orders=None, material=None) -> None:
         self.orders = orders
         self.material = material
 
     @property
     def total_tiles(self) -> int:
-        return (
-            sum(order.tiles_count for order in self.orders)
-            if self.orders else 0
-        )
+        return sum(order.tiles_count for order in self.orders) if self.orders else 0
 
     @property
     def total_area(self) -> Union[int, float]:
-        return round(
-            sum(order.square_meters for order in self.orders), 2
-        ) if self.orders else 0
+        return (
+            round(sum(order.square_meters for order in self.orders), 2)
+            if self.orders
+            else 0
+        )
 
     @property
     def winding_left(self) -> Union[int, float]:
         return (
-            0 if not self.material
+            0
+            if not self.material
             else round(self.material.winding - self.total_area, 2)
         )
 
@@ -37,20 +34,15 @@ class PrintQueueSummary:
         messages = []
         warning = "Warning: "
         if self.winding_left < 0:
-            messages.append(
-                warning + "You have too many orders!"
-            )
+            messages.append(warning + "You have too many orders!")
         if self.total_tiles % 2 != 0:
             messages.append(
-                warning + "The recommended number "
-                          "of tiles must be even!"
+                warning + "The recommended number " "of tiles must be even!"
             )
         if self.orders:
             problem_orders = self.orders.filter(status=PrintStatusMixin.PROBLEM)
             if problem_orders.exists():
-                messages.append(
-                    warning + "There are problem orders:"
-                )
+                messages.append(warning + "There are problem orders:")
                 for order in problem_orders:
                     messages.append(f"{order};")
         return messages
@@ -68,7 +60,6 @@ class PrintQueueSummary:
             "summary": self.as_dict(),
         }
 
-
     def set_orders(self, orders: Any):
         self.orders = orders
 
@@ -85,7 +76,7 @@ class PrintQueueSummary:
 
 
 def create_summary_context(
-        form: BaseForm,
+    form: BaseForm,
 ):
     """Generate Summary from form context data or initial_context property."""
     summary = PrintQueueSummary()

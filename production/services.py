@@ -2,40 +2,29 @@ from typing import Type, Any
 from django.db import models
 from django.db.models import Q, QuerySet
 
-from  .status_objects import PrintStatusMixin
+from .status_objects import PrintStatusMixin, PrinterStatusMixin
 
 
-def model_name_to_field(
-        model: Type[models.Model] | models.Model
-) -> str:
-    return "_".join(
-        model._meta.verbose_name.split()
-    )
+def model_name_to_field(model: Type[models.Model] | models.Model) -> str:
+    return "_".join(model._meta.verbose_name.split())
 
 
-def model_to_plural_related_name(
-        model: Type[models.Model]
-) -> str:
-    return "_".join(
-        model._meta.verbose_name_plural.split()
-    )
+def model_to_plural_related_name(model: Type[models.Model]) -> str:
+    return "_".join(model._meta.verbose_name_plural.split())
 
 
 def foreign_case_help_text(
-        field_name: str,
-        instance_name: str,
-
+    field_name: str,
+    instance_name: str,
 ) -> str:
     return (
-        "Add a new or remove an existing "
-        f"{field_name} from the "
-        f"{instance_name}."
+        "Add a new or remove an existing " f"{field_name} from the " f"{instance_name}."
     )
 
 
 def filter_queryset_by_instance(
-        queryset: QuerySet,
-        instance: models.Model,
+    queryset: QuerySet,
+    instance: models.Model,
 ):
     """
     Filters the queryset so that it contains objects,
@@ -43,25 +32,17 @@ def filter_queryset_by_instance(
     or instance ForeignKey are None.
     """
     instance_foreign_name = model_name_to_field(instance)
-    instance_none = {
-        f"{instance_foreign_name}__isnull": True
-    }
+    instance_none = {f"{instance_foreign_name}__isnull": True}
     if instance.pk:
-        filter_related = (
-                Q(**instance_none) |
-                Q(**{instance_foreign_name: instance})
-        )
-        return (
-            queryset.filter(filter_related)
-            .order_by(f"-{instance_foreign_name}")
-        )
+        filter_related = Q(**instance_none) | Q(**{instance_foreign_name: instance})
+        return queryset.filter(filter_related).order_by(f"-{instance_foreign_name}")
     return queryset.filter(**instance_none)
 
 
 def set_remove_foreign_by_cleaned_data_and_instance(
-        model_to_update: Type[models.Model],
-        cleaned_data: dict[str, QuerySet[models.Model]],
-        instance: models.Model
+    model_to_update: Type[models.Model],
+    cleaned_data: dict[str, QuerySet[models.Model]],
+    instance: models.Model,
 ) -> None:
     """
     Update foreign key relationships for a target model based on cleaned form data.
@@ -71,19 +52,12 @@ def set_remove_foreign_by_cleaned_data_and_instance(
     If the previously connected objects
     are not in the list of new objects, they will be disconnected.
     """
-    target_related_name = model_to_plural_related_name(
-        model_to_update
-    )
+    target_related_name = model_to_plural_related_name(model_to_update)
     instance_name = model_name_to_field(instance)
 
-    new_objects = cleaned_data.get(
-        target_related_name,
-        model_to_update.objects.none()
-    )
+    new_objects = cleaned_data.get(target_related_name, model_to_update.objects.none())
 
-    exists_objects = getattr(
-        instance, target_related_name
-    ).all()
+    exists_objects = getattr(instance, target_related_name).all()
 
     to_update = []
 
@@ -97,42 +71,47 @@ def set_remove_foreign_by_cleaned_data_and_instance(
             setattr(obj, instance_name, instance)
             to_update.append(obj)
 
-    model_to_update.objects.bulk_update(
-        to_update, [instance_name]
-    )
+    model_to_update.objects.bulk_update(to_update, [instance_name])
 
-def  filter_materials_by_printers(
-     materials: QuerySet,
-     printers: Any
-) -> QuerySet:
-    return materials.filter(
-        printers__in=printers
-    ).distinct()
+
+def filter_materials_by_printers(materials: QuerySet, printers: Any) -> QuerySet:
+    return materials.filter(printers__in=printers).distinct()
 
 
 def filter_orders_by_materials(
-        orders: QuerySet,
-        materials: QuerySet | list,
+    orders: QuerySet,
+    materials: QuerySet | list,
 ) -> QuerySet:
-    return orders.filter(
-        material__in=materials
-    ).order_by("creation_time")
+    return orders.filter(material__in=materials).order_by("creation_time")
 
 
-def fiter_workplaces_by_printers_materials(
-        workplaces: QuerySet,
-        materials: QuerySet | list,
+def fiter_workplaces_by_active_printers_materials(
+    workplaces: QuerySet,
+    materials: QuerySet | list,
 ) -> QuerySet:
     return workplaces.filter(
-        printers__materials__in=materials
+        printers__materials__in=materials, printers__status=PrinterStatusMixin.ACTIVE
     ).distinct()
 
 
 def filter_orders_by_ready_or_problem_relative(
-        orders: QuerySet,
-        print_queue: Any,
-    ) -> QuerySet:
+    orders: QuerySet,
+    print_queue: Any,
+) -> QuerySet:
     return orders.filter(
-        Q(status=PrintStatusMixin.PROBLEM, print_queue=print_queue) |
-        Q(status=PrintStatusMixin.READY_TO_PRINT)
+        Q(status=PrintStatusMixin.PROBLEM, print_queue=print_queue)
+        | Q(status=PrintStatusMixin.READY_TO_PRINT)
     )
+
+
+def get_week_time_scheme(week: list[int]) -> list[str]:
+    week_days = [
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+        "Sunday",
+    ]
+    return [week_days[day] for day in week]

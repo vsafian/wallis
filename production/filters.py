@@ -5,25 +5,22 @@ from production.mixins import FilterFieldMixin
 from production.models import Order, Material, PrintQueue, Workplace
 
 
-class OrderFilter(
-    django_filters.FilterSet,
-    FilterFieldMixin
-    ):
+class OrderFilter(django_filters.FilterSet, FilterFieldMixin):
     material = django_filters.ModelChoiceFilter(
         queryset=Material.objects.all(),
-        label='Material:',
+        label="Material:",
     )
     status = django_filters.ChoiceFilter(
         choices=Order.STATUS_CHOICES,
     )
     creation_time = django_filters.DateRangeFilter(
-        field_name='creation_time',
+        field_name="creation_time",
         label="Creation Time:",
-        lookup_expr='gte',
+        lookup_expr="gte",
     )
     country_post = django_filters.CharFilter(
-        lookup_expr='icontains',
-        label='Post code:',
+        lookup_expr="icontains",
+        label="Post code:",
     )
 
     class Meta:
@@ -47,21 +44,18 @@ class OrderFilter(
         )
 
 
-class PrintQueueFilter(
-    django_filters.FilterSet,
-    FilterFieldMixin
-):
+class PrintQueueFilter(django_filters.FilterSet, FilterFieldMixin):
     status = django_filters.ChoiceFilter(
         choices=PrintQueue.STATUS_CHOICES,
     )
     workplace = django_filters.ModelChoiceFilter(
         queryset=Workplace.objects.all(),
-        label='Workplace:',
+        label="Workplace:",
     )
 
     material = django_filters.ModelChoiceFilter(
         queryset=Material.objects.all(),
-        label='Material:',
+        label="Material:",
     )
 
     class Meta:
