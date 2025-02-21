@@ -1,0 +1,642 @@
+[
+    {
+        "model": "production.worker",
+        "pk": 2,
+        "fields": {
+            "password": "Zerorsmk+380846568531@",
+            "last_login": "2024-12-13 15:34:15.036688",
+            "is_superuser": false,
+            "username": "Zerorsmk",
+            "first_name": "Peter",
+            "last_name": "Zerorsmk",
+            "email": "Peter_Zerorsmk@email.com",
+            "is_staff": false,
+            "is_active": false,
+            "date_joined": "2022-08-08T13:58:29Z",
+            "phone_number": "+380846568531",
+            "workplace": null,
+            "groups": [],
+            "user_permissions": []
+        }
+    },
+    {
+        "model": "production.worker",
+        "pk": 3,
+        "fields": {
+            "password": "Canhrqw+380545002462#",
+            "last_login": "2024-12-13 15:34:15.036688",
+            "is_superuser": false,
+            "username": "Canhrqw",
+            "first_name": "Helen",
+            "last_name": "Canhrqw",
+            "email": "Helen_Canhrqw@email.com",
+            "is_staff": false,
+            "is_active": false,
+            "date_joined": "2022-08-08T13:58:29Z",
+            "phone_number": "+380545002462",
+            "workplace": null,
+            "groups": [],
+            "user_permissions": []
+        }
+    },
+    {
+        "model": "production.worker",
+        "pk": 4,
+        "fields": {
+            "password": "Zeroevgk+380821576812@",
+            "last_login": "2024-12-13 15:34:15.036688",
+            "is_superuser": false,
+            "username": "Zeroevgk",
+            "first_name": "Joanne",
+            "last_name": "Zeroevgk",
+            "email": "Joanne_Zeroevgk@email.com",
+            "is_staff": false,
+            "is_active": false,
+            "date_joined": "2022-08-08T13:58:29Z",
+            "phone_number": "+380821576812",
+            "workplace": null,
+            "groups": [],
+            "user_permissions": []
+        }
+    },
+    {
+        "model": "production.worker",
+        "pk": 5,
+        "fields": {
+            "password": "Rickthxo+380600468674$",
+            "last_login": "2024-12-13 15:34:15.036688",
+            "is_superuser": false,
+            "username": "Rickthxo",
+            "first_name": "Joanne",
+            "last_name": "Rickthxo",
+            "email": "Joanne_Rickthxo@email.com",
+            "is_staff": false,
+            "is_active": false,
+            "date_joined": "2022-08-08T13:58:29Z",
+            "phone_number": "+380600468674",
+            "workplace": null,
+            "groups": [],
+            "user_permissions": []
+        }
+    },
+    {
+        "model": "production.worker",
+        "pk": 6,
+        "fields": {
+            "password": "Broucmk+380113200566@",
+            "last_login": "2024-12-13 15:34:15.036688",
+            "is_superuser": false,
+            "username": "Broucmk",
+            "first_name": "Joanne",
+            "last_name": "Broucmk",
+            "email": "Joanne_Broucmk@email.com",
+            "is_staff": false,
+            "is_active": false,
+            "date_joined": "2022-08-08T13:58:29Z",
+            "phone_number": "+380113200566",
+            "workplace": null,
+            "groups": [],
+            "user_permissions": []
+        }
+    },
+    {
+        "model": "production.worker",
+        "pk": 7,
+        "fields": {
+            "password": "Lunzgsv+380561183182#",
+            "last_login": "2024-12-13 15:34:15.036688",
+            "is_superuser": false,
+            "username": "Lunzgsv",
+            "first_name": "Helen",
+            "last_name": "Lunzgsv",
+            "email": "Helen_Lunzgsv@email.com",
+            "is_staff": false,
+            "is_active": false,
+            "date_joined": "2022-08-08T13:58:29Z",
+            "phone_number": "+380561183182",
+            "workplace": null,
+            "groups": [],
+            "user_permissions": []
+        }
+    },
+    {
+        "model": "production.worker",
+        "pk": 8,
+        "fields": {
+            "password": "Lunpdme+380148747673^",
+            "last_login": "2024-12-13 15:34:15.036688",
+            "is_superuser": false,
+            "username": "Lunpdme",
+            "first_name": "Jack",
+            "last_name": "Lunpdme",
+            "email": "Jack_Lunpdme@email.com",
+            "is_staff": false,
+            "is_active": false,
+            "date_joined": "2022-08-08T13:58:29Z",
+            "phone_number": "+380148747673",
+            "workplace": null,
+            "groups": [],
+            "user_permissions": []
+        }
+    },
+    {
+        "model": "production.worker",
+        "pk": 9,
+        "fields": {
+            "password": "Zerokots+380088233300!",
+            "last_login": "2024-12-13 15:34:15.036688",
+            "is_superuser": false,
+            "username": "Zerokots",
+            "first_name": "Joanne",
+            "last_name": "Zerokots",
+            "email": "Joanne_Zerokots@email.com",
+            "is_staff": false,
+            "is_active": false,
+            "date_joined": "2022-08-08T13:58:29Z",
+            "phone_number": "+380088233300",
+            "workplace": null,
+            "groups": [],
+            "user_permissions": []
+        }
+    },
+    {
+        "model": "production.worker",
+        "pk": 10,
+        "fields": {
+            "password": "Epsfima+380463671454^",
+            "last_login": "2024-12-13 15:34:15.036688",
+            "is_superuser": false,
+            "username": "Epsfima",
+            "first_name": "Mac",
+            "last_name": "Epsfima",
+            "email": "Mac_Epsfima@email.com",
+            "is_staff": false,
+            "is_active": false,
+            "date_joined": "2022-08-08T13:58:29Z",
+            "phone_number": "+380463671454",
+            "workplace": null,
+            "groups": [],
+            "user_permissions": []
+        }
+    },
+    {
+        "model": "production.worker",
+        "pk": 11,
+        "fields": {
+            "password": "Brormap+380537533631^",
+            "last_login": "2024-12-13 15:34:15.036688",
+            "is_superuser": false,
+            "username": "Brormap",
+            "first_name": "Helen",
+            "last_name": "Brormap",
+            "email": "Helen_Brormap@email.com",
+            "is_staff": false,
+            "is_active": false,
+            "date_joined": "2022-08-08T13:58:29Z",
+            "phone_number": "+380537533631",
+            "workplace": null,
+            "groups": [],
+            "user_permissions": []
+        }
+    },
+    {
+        "model": "production.worker",
+        "pk": 12,
+        "fields": {
+            "password": "Rickzjnc+380551651351^",
+            "last_login": "2024-12-13 15:34:15.036688",
+            "is_superuser": false,
+            "username": "Rickzjnc",
+            "first_name": "Jack",
+            "last_name": "Rickzjnc",
+            "email": "Jack_Rickzjnc@email.com",
+            "is_staff": false,
+            "is_active": false,
+            "date_joined": "2022-08-08T13:58:29Z",
+            "phone_number": "+380551651351",
+            "workplace": null,
+            "groups": [],
+            "user_permissions": []
+        }
+    },
+    {
+        "model": "production.worker",
+        "pk": 13,
+        "fields": {
+            "password": "Zerodmcy+380140027535!",
+            "last_login": "2024-12-13 15:34:15.036688",
+            "is_superuser": false,
+            "username": "Zerodmcy",
+            "first_name": "Mac",
+            "last_name": "Zerodmcy",
+            "email": "Mac_Zerodmcy@email.com",
+            "is_staff": false,
+            "is_active": false,
+            "date_joined": "2022-08-08T13:58:29Z",
+            "phone_number": "+380140027535",
+            "workplace": null,
+            "groups": [],
+            "user_permissions": []
+        }
+    },
+    {
+        "model": "production.worker",
+        "pk": 14,
+        "fields": {
+            "password": "Rickdvwq+380618044720#",
+            "last_login": "2024-12-13 15:34:15.036688",
+            "is_superuser": false,
+            "username": "Rickdvwq",
+            "first_name": "Mac",
+            "last_name": "Rickdvwq",
+            "email": "Mac_Rickdvwq@email.com",
+            "is_staff": false,
+            "is_active": false,
+            "date_joined": "2022-08-08T13:58:29Z",
+            "phone_number": "+380618044720",
+            "workplace": null,
+            "groups": [],
+            "user_permissions": []
+        }
+    },
+    {
+        "model": "production.worker",
+        "pk": 15,
+        "fields": {
+            "password": "Epsjmdc+380866618562#",
+            "last_login": "2024-12-13 15:34:15.036688",
+            "is_superuser": false,
+            "username": "Epsjmdc",
+            "first_name": "Joanne",
+            "last_name": "Epsjmdc",
+            "email": "Joanne_Epsjmdc@email.com",
+            "is_staff": false,
+            "is_active": false,
+            "date_joined": "2022-08-08T13:58:29Z",
+            "phone_number": "+380866618562",
+            "workplace": null,
+            "groups": [],
+            "user_permissions": []
+        }
+    },
+    {
+        "model": "production.worker",
+        "pk": 16,
+        "fields": {
+            "password": "Epskoue+380507814850@",
+            "last_login": "2024-12-13 15:34:15.036688",
+            "is_superuser": false,
+            "username": "Epskoue",
+            "first_name": "Jack",
+            "last_name": "Epskoue",
+            "email": "Jack_Epskoue@email.com",
+            "is_staff": false,
+            "is_active": false,
+            "date_joined": "2022-08-08T13:58:29Z",
+            "phone_number": "+380507814850",
+            "workplace": null,
+            "groups": [],
+            "user_permissions": []
+        }
+    },
+    {
+        "model": "production.worker",
+        "pk": 17,
+        "fields": {
+            "password": "Lunqvek+380274573415#",
+            "last_login": "2024-12-13 15:34:15.036688",
+            "is_superuser": false,
+            "username": "Lunqvek",
+            "first_name": "Jack",
+            "last_name": "Lunqvek",
+            "email": "Jack_Lunqvek@email.com",
+            "is_staff": false,
+            "is_active": false,
+            "date_joined": "2022-08-08T13:58:29Z",
+            "phone_number": "+380274573415",
+            "workplace": null,
+            "groups": [],
+            "user_permissions": []
+        }
+    },
+    {
+        "model": "production.worker",
+        "pk": 18,
+        "fields": {
+            "password": "Brodoef+380773304186@",
+            "last_login": "2024-12-13 15:34:15.036688",
+            "is_superuser": false,
+            "username": "Brodoef",
+            "first_name": "Helen",
+            "last_name": "Brodoef",
+            "email": "Helen_Brodoef@email.com",
+            "is_staff": false,
+            "is_active": false,
+            "date_joined": "2022-08-08T13:58:29Z",
+            "phone_number": "+380773304186",
+            "workplace": null,
+            "groups": [],
+            "user_permissions": []
+        }
+    },
+    {
+        "model": "production.worker",
+        "pk": 19,
+        "fields": {
+            "password": "Lunuxns+380150407711#",
+            "last_login": "2024-12-13 15:34:15.036688",
+            "is_superuser": false,
+            "username": "Lunuxns",
+            "first_name": "Peter",
+            "last_name": "Lunuxns",
+            "email": "Peter_Lunuxns@email.com",
+            "is_staff": false,
+            "is_active": false,
+            "date_joined": "2022-08-08T13:58:29Z",
+            "phone_number": "+380150407711",
+            "workplace": null,
+            "groups": [],
+            "user_permissions": []
+        }
+    },
+    {
+        "model": "production.worker",
+        "pk": 20,
+        "fields": {
+            "password": "Brofrho+380355153050$",
+            "last_login": "2024-12-13 15:34:15.036688",
+            "is_superuser": false,
+            "username": "Brofrho",
+            "first_name": "Helen",
+            "last_name": "Brofrho",
+            "email": "Helen_Brofrho@email.com",
+            "is_staff": false,
+            "is_active": false,
+            "date_joined": "2022-08-08T13:58:29Z",
+            "phone_number": "+380355153050",
+            "workplace": null,
+            "groups": [],
+            "user_permissions": []
+        }
+    },
+    {
+        "model": "production.worker",
+        "pk": 21,
+        "fields": {
+            "password": "Ricksyef+380553278404@",
+            "last_login": "2024-12-13 15:34:15.036688",
+            "is_superuser": false,
+            "username": "Ricksyef",
+            "first_name": "Peter",
+            "last_name": "Ricksyef",
+            "email": "Peter_Ricksyef@email.com",
+            "is_staff": false,
+            "is_active": false,
+            "date_joined": "2022-08-08T13:58:29Z",
+            "phone_number": "+380553278404",
+            "workplace": null,
+            "groups": [],
+            "user_permissions": []
+        }
+    },
+    {
+        "model": "production.worker",
+        "pk": 22,
+        "fields": {
+            "password": "Rickkeln+380825806387@",
+            "last_login": "2024-12-13 15:34:15.036688",
+            "is_superuser": false,
+            "username": "Rickkeln",
+            "first_name": "Jack",
+            "last_name": "Rickkeln",
+            "email": "Jack_Rickkeln@email.com",
+            "is_staff": false,
+            "is_active": false,
+            "date_joined": "2022-08-08T13:58:29Z",
+            "phone_number": "+380825806387",
+            "workplace": null,
+            "groups": [],
+            "user_permissions": []
+        }
+    },
+    {
+        "model": "production.worker",
+        "pk": 23,
+        "fields": {
+            "password": "Epshdrb+380481144208$",
+            "last_login": "2024-12-13 15:34:15.036688",
+            "is_superuser": false,
+            "username": "Epshdrb",
+            "first_name": "Mac",
+            "last_name": "Epshdrb",
+            "email": "Mac_Epshdrb@email.com",
+            "is_staff": false,
+            "is_active": false,
+            "date_joined": "2022-08-08T13:58:29Z",
+            "phone_number": "+380481144208",
+            "workplace": null,
+            "groups": [],
+            "user_permissions": []
+        }
+    },
+    {
+        "model": "production.worker",
+        "pk": 24,
+        "fields": {
+            "password": "Lunzqcx+380301800626!",
+            "last_login": "2024-12-13 15:34:15.036688",
+            "is_superuser": false,
+            "username": "Lunzqcx",
+            "first_name": "Jack",
+            "last_name": "Lunzqcx",
+            "email": "Jack_Lunzqcx@email.com",
+            "is_staff": false,
+            "is_active": false,
+            "date_joined": "2022-08-08T13:58:29Z",
+            "phone_number": "+380301800626",
+            "workplace": null,
+            "groups": [],
+            "user_permissions": []
+        }
+    },
+    {
+        "model": "production.worker",
+        "pk": 25,
+        "fields": {
+            "password": "Lungucm+380085747365#",
+            "last_login": "2024-12-13 15:34:15.036688",
+            "is_superuser": false,
+            "username": "Lungucm",
+            "first_name": "Mac",
+            "last_name": "Lungucm",
+            "email": "Mac_Lungucm@email.com",
+            "is_staff": false,
+            "is_active": false,
+            "date_joined": "2022-08-08T13:58:29Z",
+            "phone_number": "+380085747365",
+            "workplace": null,
+            "groups": [],
+            "user_permissions": []
+        }
+    },
+    {
+        "model": "production.worker",
+        "pk": 26,
+        "fields": {
+            "password": "Brorxmu+380741483333#",
+            "last_login": "2024-12-13 15:34:15.036688",
+            "is_superuser": false,
+            "username": "Brorxmu",
+            "first_name": "Peter",
+            "last_name": "Brorxmu",
+            "email": "Peter_Brorxmu@email.com",
+            "is_staff": false,
+            "is_active": false,
+            "date_joined": "2022-08-08T13:58:29Z",
+            "phone_number": "+380741483333",
+            "workplace": null,
+            "groups": [],
+            "user_permissions": []
+        }
+    },
+    {
+        "model": "production.worker",
+        "pk": 27,
+        "fields": {
+            "password": "Epsgfbn+380032325035@",
+            "last_login": "2024-12-13 15:34:15.036688",
+            "is_superuser": false,
+            "username": "Epsgfbn",
+            "first_name": "Peter",
+            "last_name": "Epsgfbn",
+            "email": "Peter_Epsgfbn@email.com",
+            "is_staff": false,
+            "is_active": false,
+            "date_joined": "2022-08-08T13:58:29Z",
+            "phone_number": "+380032325035",
+            "workplace": null,
+            "groups": [],
+            "user_permissions": []
+        }
+    },
+    {
+        "model": "production.worker",
+        "pk": 28,
+        "fields": {
+            "password": "Epscfiw+380381207823@",
+            "last_login": "2024-12-13 15:34:15.036688",
+            "is_superuser": false,
+            "username": "Epscfiw",
+            "first_name": "Helen",
+            "last_name": "Epscfiw",
+            "email": "Helen_Epscfiw@email.com",
+            "is_staff": false,
+            "is_active": false,
+            "date_joined": "2022-08-08T13:58:29Z",
+            "phone_number": "+380381207823",
+            "workplace": null,
+            "groups": [],
+            "user_permissions": []
+        }
+    },
+    {
+        "model": "production.worker",
+        "pk": 29,
+        "fields": {
+            "password": "Epslatd+380562842705!",
+            "last_login": "2024-12-13 15:34:15.036688",
+            "is_superuser": false,
+            "username": "Epslatd",
+            "first_name": "Jack",
+            "last_name": "Epslatd",
+            "email": "Jack_Epslatd@email.com",
+            "is_staff": false,
+            "is_active": false,
+            "date_joined": "2022-08-08T13:58:29Z",
+            "phone_number": "+380562842705",
+            "workplace": null,
+            "groups": [],
+            "user_permissions": []
+        }
+    },
+    {
+        "model": "production.worker",
+        "pk": 30,
+        "fields": {
+            "password": "Epssbjd+380477414040$",
+            "last_login": "2024-12-13 15:34:15.036688",
+            "is_superuser": false,
+            "username": "Epssbjd",
+            "first_name": "Peter",
+            "last_name": "Epssbjd",
+            "email": "Peter_Epssbjd@email.com",
+            "is_staff": false,
+            "is_active": false,
+            "date_joined": "2022-08-08T13:58:29Z",
+            "phone_number": "+380477414040",
+            "workplace": null,
+            "groups": [],
+            "user_permissions": []
+        }
+    },
+    {
+        "model": "production.worker",
+        "pk": 31,
+        "fields": {
+            "password": "Rickwcyd+380424107476!",
+            "last_login": "2024-12-13 15:34:15.036688",
+            "is_superuser": false,
+            "username": "Rickwcyd",
+            "first_name": "Peter",
+            "last_name": "Rickwcyd",
+            "email": "Peter_Rickwcyd@email.com",
+            "is_staff": false,
+            "is_active": false,
+            "date_joined": "2022-08-08T13:58:29Z",
+            "phone_number": "+380424107476",
+            "workplace": null,
+            "groups": [],
+            "user_permissions": []
+        }
+    },
+    {
+        "model": "production.worker",
+        "pk": 32,
+        "fields": {
+            "password": "Canydut+380540770874!",
+            "last_login": "2024-12-13 15:34:15.036688",
+            "is_superuser": false,
+            "username": "Canydut",
+            "first_name": "Helen",
+            "last_name": "Canydut",
+            "email": "Helen_Canydut@email.com",
+            "is_staff": false,
+            "is_active": false,
+            "date_joined": "2022-08-08T13:58:29Z",
+            "phone_number": "+380540770874",
+            "workplace": null,
+            "groups": [],
+            "user_permissions": []
+        }
+    },
+    {
+        "model": "production.worker",
+        "pk": 33,
+        "fields": {
+            "password": "Zerolbhx+380104100422@",
+            "last_login": "2024-12-13 15:34:15.036688",
+            "is_superuser": false,
+            "username": "Zerolbhx",
+            "first_name": "Mac",
+            "last_name": "Zerolbhx",
+            "email": "Mac_Zerolbhx@email.com",
+            "is_staff": false,
+            "is_active": false,
+            "date_joined": "2022-08-08T13:58:29Z",
+            "phone_number": "+380104100422",
+            "workplace": null,
+            "groups": [],
+            "user_permissions": []
+        }
+    }
+]

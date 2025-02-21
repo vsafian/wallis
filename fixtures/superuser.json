@@ -1,0 +1,21 @@
+[{
+    "model": "production.worker",
+    "pk": 1,
+    "fields": {
+        "password": "1qazcde3",
+        "last_login": "2024-12-12 18:31:05.995666",
+        "is_superuser": true,
+        "username": "admin.user",
+        "first_name": "Joanne",
+        "last_name": "Epskdsq",
+        "email": "Joanne_Epskdsq@email.com",
+        "is_staff": true,
+        "is_active": false,
+        "date_joined": "2022-08-08T13:58:29Z",
+        "phone_number": "+38087057076",
+        "workplace": null,
+        "groups": [],
+        "user_permissions": []
+    }
+}
+]
