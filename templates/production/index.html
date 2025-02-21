@@ -1,8 +1,4 @@
 {% extends "base.html" %}
-
-<!-- Specific Page CSS goes HERE  -->
-{% block stylesheets %}{% endblock stylesheets %}
-
 {% block content %}
   <div class="row">
     <div class="col-md-4">
@@ -95,6 +91,7 @@
 {% block javascripts %}
   <script>
       let orderStats = {
+          labels: {{ week_scheme|safe }},
           series: {{ weekly_orders|safe }}
       };
   </script>
