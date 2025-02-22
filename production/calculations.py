@@ -37,12 +37,12 @@ class PrintQueueSummary:
             messages.append(warning + "You have too many orders!")
         if self.total_tiles % 2 != 0:
             messages.append(
-                warning + "The recommended number " "of tiles must be even!"
+                warning + "The recommended number of tiles must be even!"
             )
         if self.orders:
             problem_orders = self.orders.filter(status=PrintStatusMixin.PROBLEM)
             if problem_orders.exists():
-                messages.append(warning + "There are problem orders:")
+                messages.append(warning + "There are problem orders!")
                 for order in problem_orders:
                     messages.append(f"{order};")
         return messages
