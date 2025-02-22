@@ -1,7 +1,7 @@
 from typing import List, Dict, Union, Any
 from django.forms import BaseForm
 
-from .status_objects import PrintStatusMixin
+from production.status_objects import PrintStatusMixin
 
 
 class PrintQueueSummary:

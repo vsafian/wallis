@@ -35,7 +35,11 @@ from production.mixins import (
     ListViewSearchMixin,
 )
 
-from production.models import Worker, Workplace, Material, Printer, PrintQueue, Order
+from production.models import (
+    Worker, Workplace,
+    Material, Printer,
+    PrintQueue, Order
+)
 
 from production.calculations import create_summary_context
 from production.services import get_week_time_scheme

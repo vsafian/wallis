@@ -1,7 +1,11 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 
-from production.models import Worker, Workplace, Order, Material, Printer, PrintQueue
+from production.models import (
+    Worker, Workplace,
+    Order, Material,
+    Printer, PrintQueue
+)
 
 
 @admin.register(Worker)

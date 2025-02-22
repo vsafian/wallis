@@ -3,9 +3,8 @@ from unittest import TestCase
 from django import forms
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ImproperlyConfigured
-from django.db.models import Q, QuerySet
+from django.db.models import Q
 from django.forms import ModelForm
-from django.http import QueryDict
 from django.test import RequestFactory
 from django.urls import reverse
 
@@ -17,7 +16,7 @@ from production.mixins import (
     FormFieldMixin,
     FormSaveForeignMixin,
 )
-from production.models import Workplace, Printer, Worker
+from production.models import Workplace, Printer
 from tests.test_items import TestItems
 
 

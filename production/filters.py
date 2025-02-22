@@ -2,7 +2,12 @@ import django_filters
 from django import forms
 
 from production.mixins import FilterFieldMixin
-from production.models import Order, Material, PrintQueue, Workplace
+from production.models import (
+    Order,
+    Material,
+    PrintQueue,
+    Workplace
+)
 
 
 class OrderFilter(django_filters.FilterSet, FilterFieldMixin):

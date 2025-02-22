@@ -1,15 +1,19 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 
-from .mixins import FormFieldMixin, FormSaveForeignMixin
-from .services import (
+from production.mixins import FormFieldMixin, FormSaveForeignMixin
+from production.services import (
     filter_orders_by_materials,
     filter_workplaces_by_active_printers_materials,
     filter_materials_by_printers,
     filter_orders_by_ready_or_problem_relative,
 )
 
-from .models import Worker, Workplace, Printer, Material, PrintQueue, Order
+from production.models import (
+    Worker, Workplace,
+    Printer, Material,
+    PrintQueue, Order
+)
 
 
 class WorkerCreateForm(UserCreationForm):

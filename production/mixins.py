@@ -8,7 +8,6 @@ from django.http import HttpResponseRedirect, Http404
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.views import generic
-from django_filters.views import FilterView
 
 from production.services import (
     filter_queryset_by_instance,

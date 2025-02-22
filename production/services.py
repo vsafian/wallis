@@ -2,7 +2,7 @@ from typing import Type, Any
 from django.db import models
 from django.db.models import Q, QuerySet
 
-from .status_objects import PrintStatusMixin, PrinterStatusMixin
+from production.status_objects import PrintStatusMixin, PrinterStatusMixin
 
 
 def model_name_to_field(model: Type[models.Model] | models.Model) -> str:

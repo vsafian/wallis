@@ -1,7 +1,11 @@
 from django.test import TestCase
 from django.urls import reverse
 
-from production.models import Order, Workplace, Worker, Printer, PrintQueue, Material
+from production.models import (
+    Workplace, Worker,
+    Order,  Printer,
+    PrintQueue, Material
+)
 
 from tests.test_items import TestItems
 
