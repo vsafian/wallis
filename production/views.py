@@ -313,7 +313,7 @@ class OrderListView(
     ListViewSearchMixin,
 ):
     model = Order
-    paginate_by = 16
+    paginate_by = 10
     search_form = OrderSearchForm
     search_field = "code"
     queryset = Order.objects.prefetch_related("material").all()
@@ -354,6 +354,9 @@ class PrintQueueDeleteView(LoginRequiredMixin, DeleteViewMixin):
 class PrintQueueDetailView(LoginRequiredMixin, generic.DetailView):
     model = PrintQueue
     template_name = "production/print_queue_detail.html"
+    queryset = PrintQueue.objects.prefetch_related(
+        "orders__material"
+    ).all()
 
 
 class PrintQueueCreateView(
