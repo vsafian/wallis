@@ -13,15 +13,6 @@ def model_to_plural_related_name(model: Type[models.Model]) -> str:
     return "_".join(model._meta.verbose_name_plural.split())
 
 
-def foreign_case_help_text(
-    field_name: str,
-    instance_name: str,
-) -> str:
-    return (
-        "Add a new or remove an existing " f"{field_name} from the " f"{instance_name}."
-    )
-
-
 def filter_queryset_by_instance(
     queryset: QuerySet,
     instance: models.Model,
@@ -55,7 +46,10 @@ def set_remove_foreign_by_cleaned_data_and_instance(
     target_related_name = model_to_plural_related_name(model_to_update)
     instance_name = model_name_to_field(instance)
 
-    new_objects = cleaned_data.get(target_related_name, model_to_update.objects.none())
+    new_objects = cleaned_data.get(
+        target_related_name,
+        model_to_update.objects.none()
+    )
 
     exists_objects = getattr(instance, target_related_name).all()
 
@@ -85,12 +79,13 @@ def filter_orders_by_materials(
     return orders.filter(material__in=materials).order_by("creation_time")
 
 
-def fiter_workplaces_by_active_printers_materials(
+def filter_workplaces_by_active_printers_materials(
     workplaces: QuerySet,
     materials: QuerySet | list,
 ) -> QuerySet:
     return workplaces.filter(
-        printers__materials__in=materials, printers__status=PrinterStatusMixin.ACTIVE
+        printers__materials__in=materials,
+        printers__status=PrinterStatusMixin.ACTIVE
     ).distinct()
 
 

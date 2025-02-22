@@ -3,9 +3,8 @@ from django.contrib.auth.forms import UserCreationForm
 
 from .mixins import FormFieldMixin, FormSaveForeignMixin
 from .services import (
-    foreign_case_help_text,
     filter_orders_by_materials,
-    fiter_workplaces_by_active_printers_materials,
+    filter_workplaces_by_active_printers_materials,
     filter_materials_by_printers,
     filter_orders_by_ready_or_problem_relative,
 )
@@ -54,10 +53,6 @@ class WorkplaceForm(FormFieldMixin, FormSaveForeignMixin):
 
     def initialize(self):
         for field_name in ["printers", "workers"]:
-            field = self.get_field(field_name)
-            field.help_text = foreign_case_help_text(
-                field_name=field_name, instance_name="workplace"
-            )
             self.filter_field_queryset_by_instance(field_name)
             self.set_initial_default_for_related_field(field_name)
 
@@ -113,7 +108,7 @@ class PrintQueueCreateForm(FormFieldMixin, FormSaveForeignMixin):
         widget=forms.CheckboxSelectMultiple(),
         required=True,
         error_messages={
-            "required": ("Please select at least one order!"),
+            "required": "Please select at least one order!",
             "invalid_choice": "",
         },
     )
@@ -231,7 +226,7 @@ class PrintQueueUpdateForm(FormFieldMixin, FormSaveForeignMixin):
 
     def setup_workplace_queryset(self):
         workplace = self.get_field("workplace")
-        workplace.queryset = fiter_workplaces_by_active_printers_materials(
+        workplace.queryset = filter_workplaces_by_active_printers_materials(
             workplaces=workplace.queryset, materials=[self.instance.material]
         )
 
