@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <div class="d-flex justify-content-between align-items-center">
+    <h1>
+      Print Queue: #{{ printqueue.id }}
+    </h1>
+    {% if user.is_staff or user in printqueue.workplace.workers %}
+      <div>
+        {% if printqueue.is_printable %}
+          <a href="#"
+             class="btn btn-success btn-sm"
+             title="Open in printer"
+          ><i class="material-icons">print</i>
+          </a>
+        {% endif %}
+        {% if printqueue.is_editable %}
+          <a class="btn bg-secondary btn-sm"
+             href="{% url 'production:print-queue-update' pk=printqueue.id %}"
+             title="Edit"
+          ><i class="material-icons">edit</i>
+          </a>
+        {% endif %}
+        {% if printqueue.is_deletable %}
+          <a class="btn btn-danger btn-sm"
+             href="{% url 'production:print-queue-delete' pk=printqueue.id %}"
+             title="Delete"
+          >
+            <i class="material-icons">delete</i>
+          </a>
+        {% endif %}
+      </div>
+    {% endif %}
+  </div>
+  <br>
+  <div>
+    <h3><strong>Base information:</strong></h3>
+    <table class="table">
+      <tr>
+        <th>Workplace</th>
+        <td>{{ printqueue.workplace }}</td>
+      </tr>
+      <tr>
+        <th>Creation Date</th>
+        <td>{{ printqueue.creation_time|date:"Y-m-d H:i" }}</td>
+      </tr>
+      <tr>
+        <th>Tiles Count</th>
+        <td>{{ printqueue.summary.total_tiles }}</td>
+      </tr>
+      <tr>
+        <th>Square Meters</th>
+        <td>{{ printqueue.summary.total_area }}</td>
+      </tr>
+      <tr>
+        <th>Roll left</th>
+        <td>{{ printqueue.summary.winding_left }} m²</td>
+      </tr>
+    </table>
+  </div>
+  <hr>
+  <div>
+    <h3><strong>Performing details:</strong></h3>
+    <table class="table">
+      <tr>
+        <th>Status:</th>
+        <td>{{ printqueue.get_status_display }}</td>
+      </tr>
+      <tr>
+        <th>Printed on:</th>
+        <td>
+          {% if printqueue.printer %}
+            <a class="page-link" 
+               href="{% url 'production:printer-detail' pk=printqueue.printer.id %}"
+            >{{ printqueue.printer }}
+            </a>
+          {% else %}
+            {{ printqueue.printer }}
+          {% endif %}
+        </td>
+      </tr>
+    </table>
+  </div>
+  <br>
+  <div>
+    {% if printqueue.orders.exists %}
+      <div class="card card-plain">
+        <div class="card-header card-header-tabs card-header-warning rounded">
+          <div class="nav-tabs-navigation">
+            <div class="nav-tabs-wrapper">
+              <div class="d-flex align-items-center justify-content-between">
+                <h1 class="nav-tabs-title">Orders</h1>
+                {% if user in printqueue.workplace.workers.all or user.is_staff %}
+                  <ul class="nav nav-tabs" data-tabs="tabs">
+                    <li class="nav-item">
+                    </li>
+                  </ul>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive h4">
+            <table class="table text-center">
+              <thead class="text-warning">
+              <tr>
+                <th>Code</th>
+                <th>Status</th>
+                <th>Material</th>
+                <th>Size (m²)</th>
+                <th>Tiles Count</th>
+              </tr>
+              </thead>
+              <tbody>
+              {% for order in printqueue.orders.all %}
+                <tr>
+                  <td><a href="{% url 'production:order-detail' pk=order.id %}"
+                       class="page-link text-warning">#{{ order.code }}</a></td>
+                  <td>{{ order.get_status_display }}</td>
+                  <td>{{ order.material.name }}</td>
+                  <td>{{ order.square_meters }}</td>
+                  <td>{{ order.tiles_count }}</td>
+                  
+                </tr>
+              {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    {% else %}
+      <p class="text-danger"> No orders in this queue! </p>
+    {% endif %}
+  </div>
+  <div>
+    <a href="{% url 'production:workplace-detail' pk=printqueue.workplace.id %}"
+       class="btn bg-inverse"
+    >< Back to Workplace
+    </a>
+  </div>
+{% endblock %}

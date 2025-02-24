@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% block content %}
+  <div class="row">
+    <div class="col-md-4">
+      <div class="card card-stats">
+        <div class="card-header card-header-success card-header-icon">
+          <div class="card-icon">
+            <i class="material-icons">print</i>
+          </div>
+          <p class="card-category">Available Orders</p>
+          <h3 class="card-title text-success">{{ num_orders_to_close }}</h3>
+        </div>
+        <div class="card-footer">
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card card-stats">
+        <div class="card-header card-header-danger card-header-icon">
+          <div class="card-icon">
+            <i class="material-icons">info_outline</i>
+          </div>
+          <p class="card-category">Problem Orders</p>
+          <h3 class="card-title text-danger">{{ problem_orders }}</h3>
+        </div>
+        <div class="card-footer">
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card card-stats">
+        <div class="card-header card-header-primary card-header-icon">
+          <div class="card-icon">
+            <i class="material-icons">check</i>
+          </div>
+          <p class="card-category">Completed today</p>
+          <h3 class="card-title text-primary">{{ num_daily_done_orders }}</h3>
+        </div>
+        <div class="card-footer">
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-lg-12">
+      <div class="card card-chart">
+        <div class="card-header card-header-info">
+          <div class="ct-chart" id="weekOrdersChart"></div>
+        </div>
+        <div class="card-body">
+          <h4 class="card-title">Closed orders for week</h4>
+        </div>
+        <div class="card-footer"></div>
+      </div>
+    </div>
+  </div>
+  <br>
+  <div class="row">
+    <div class="col-lg-12">
+      <div class="card">
+        <div class="card-header card-header-primary">
+          <h3 class="card-title">Leaderboard</h3>
+        </div>
+        <div class="card-body table-responsive">
+          <table class="table table-hover text-center">
+            <thead class="text-primary">
+            <tr>
+              <th>Workplace</th>
+              <th>Closed Orders</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for workplace in workplaces %}
+              <tr>
+                <td>
+                  <a href="{% url 'production:workplace-detail' pk=workplace.id %}"
+                     class="page-link text-primary"
+                  >{{ workplace.name }}
+                  </a>
+                </td>
+                <td>{{ workplace.completed_orders_count }}</td>
+              </tr>
+            {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock content %}
+{% block javascripts %}
+  <script>
+      let orderStats = {
+          labels: {{ week_scheme|safe }},
+          series: {{ weekly_orders|safe }}
+      };
+  </script>
+{% endblock javascripts %}
+

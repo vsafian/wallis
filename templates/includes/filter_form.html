@@ -1,0 +1,22 @@
+<div>
+  <div class="card">
+    <div class="card-body">
+      <form method="get">
+        <div class="text-center form-inline mb-2">
+          {% for field in filter.form %}
+            <div class="form-inline">
+              <label class="text-secondary mr-3" for="{{ field.id_for_label }}">{{ field.label }}</label>
+              <div class="mr-4">{{ field }}</div>
+            </div>
+          {% endfor %}
+        </div>
+        <div class="text-center">
+          <button type="submit"
+                  class="btn btn-sm btn-default"
+          ><i class="material-icons">search</i> Apply Filter
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

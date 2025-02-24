@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block content %}
+  <hr>
+  <div class="d-flex justify-content-between align-items-center">
+    <h1>
+      Printer: {{ printer.full_name }}
+    </h1>
+    {% if user.is_staff %}
+      <div>
+        <a class="btn bg-secondary btn-sm"
+           href="{% url 'production:printer-update' pk=printer.id %}"
+           title="Edit printer"
+        >
+          <i class="material-icons">edit</i>
+        </a>
+        <a class="btn btn-danger btn-sm"
+           href="{% url 'production:printer-delete' pk=printer.id %}"
+           title="Delete printer"
+        >
+          <i class="material-icons">delete</i>
+        </a>
+      </div>
+    {% endif %}
+  </div>
+  <hr>
+  <div>
+    <h2>Workplace: {{ printer.workplace }}</h2>
+  </div>
+  <hr>
+    <h2>Status: {{ printer.get_status_display }}</h2>
+  <hr>
+  <div class="row">
+    <div class="col-md-12">
+      <div class="card card-plain">
+        <div class="card-header card-header-tabs card-header-success">
+          <div class="nav-tabs-navigation">
+            <div class="nav-tabs-wrapper">
+              <div class="d-flex align-items-center justify-content-between">
+                <h1 class="nav-tabs-title">Materials:</h1>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive h4">
+            <table class="table">
+              <thead class="text-success">
+              <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Type</th>
+                <th>Roll Width</th>
+                <th>Winding</th>
+                <th>Density</th>
+              </tr>
+              </thead>
+              <tbody>
+              {% for material in printer.materials.all %}
+                <tr>
+                  <td>{{ material.id }}</td>
+                  <td>
+                    <a class="page-link text-success"
+                       href="{% url 'production:material-detail' pk=material.id %}"
+                    >
+                      {{ material.name }}
+                    </a>
+                  </td>
+                  <td>{{ material.type }}</td>
+                  <td>{{ material.roll_width }}</td>
+                  <td>{{ material.winding }}</td>
+                  <td>{{ material.density }}</td>
+                </tr>
+              {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+{% endblock %}

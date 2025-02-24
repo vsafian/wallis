@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block content %}
+  <hr>
+  <div class="d-flex justify-content-between align-items-center">
+    <h1>
+      Material: {{ material.name }}
+    </h1>
+    {% if user.is_staff %}
+      <div>
+        <a class="btn bg-secondary btn-sm"
+           href="{% url 'production:material-update' pk=material.id %}"
+           title="Edit material"
+        >
+          <i class="material-icons">edit</i>
+        </a>
+        <a class="btn btn-danger btn-sm"
+           href="{% url 'production:material-delete' pk=material.id %}"
+           title="Delete Material"
+        >
+          <i class="material-icons">delete</i>
+        </a>
+      </div>
+    {% endif %}
+  </div>
+  <hr>
+  <div>
+    <h3>Parameters:</h3>
+    <br>
+    <p><strong>Type:</strong> {{ material.type }}</p>
+    <p><strong>Roll width:</strong> {{ material.roll_width }}</p>
+    <p><strong>Winding:</strong> {{ material.winding }}</p>
+    <p><strong>Density:</strong> {{ material.density }}</p>
+    <p><strong>Number of printers:</strong> {{ material.printers.count }}</p>
+  </div>
+  <hr>
+  <br>
+  <div>
+    {% if material.printers.all %}
+      <div class="card card-plain">
+        <div class="card-header card-header-tabs card-header-success rounded">
+          <div class="nav-tabs-navigation">
+            <div class="nav-tabs-wrapper">
+              <div class="d-flex align-items-center justify-content-between">
+                <h1 class="nav-tabs-title">Printers</h1>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive h4">
+            <table class="table">
+              <thead class="text-success">
+              <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Workplace</th>
+              </tr>
+              </thead>
+              <tbody>
+              {% for printer in material.printers.all %}
+                <tr>
+                  <td>{{ printer.id }}</td>
+                  <td>
+                    <a href="{{ printer.get_absolute_url }}"
+                       class="page-link text-success"
+                    >
+                      {{ printer.full_name }}
+                    </a>
+                  </td>
+                  <td>{{ printer.workplace }}</td>
+                </tr>
+              {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    {% else %}
+      <p class="text-danger"> This material is not yet assigned to any printer! </p>
+    {% endif %}
+  </div>
+{% endblock %}

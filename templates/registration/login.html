@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% load crispy_forms_filters %}
+{% block navigation %}
+  <div class="header text-center mt-5">
+    <h1 class="display-4">Wallis</h1>
+  </div>
+{% endblock %}
+{% block sidebar %}
+{% endblock %}
+{% block content %}
+  <div class="row text-center justify-content-center">
+    <div class="col-md-5">
+      <div class="card">
+        <div class="card-header card-header-primary">
+          <h4 class="card-title">
+            Login
+          </h4>
+        </div>
+        <div class="card-body">
+          <h6 class="card-category">
+            {% if msg %}
+              <span class="text-danger">{{ msg | safe }}</span>
+            {% else %}
+              Add your credentials
+            {% endif %}
+          </h6>
+          <br/>
+          <form role="form" method="post" action="">
+            {% csrf_token %}
+            <div class="row">
+              <div class="col-md-12">
+                <div class="form-group">
+                  {{ form.username |as_crispy_field  }}
+                </div>
+              </div>
+            </div>
+            <br/>
+            <div class="row">
+              <div class="col-md-12">
+                <div class="form-group">
+                  {{ form.password|as_crispy_field }}
+                </div>
+              </div>
+            </div>
+            <br/>
+            <button type="submit" name="login" class="btn btn-primary text-center">Login</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock content %}
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}{% endblock javascripts %}

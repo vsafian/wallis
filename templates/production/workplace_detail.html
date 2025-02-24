@@ -1,0 +1,227 @@
+{% extends "base.html" %}
+{% block content %}
+  <div class="d-flex justify-content-between align-items-center">
+    <h1>
+      Workplace: {{ workplace.name }}
+    </h1>
+    {% if user.is_staff %}
+      <div>
+        <a class="btn bg-secondary btn-sm"
+           href="{% url 'production:workplace-update' pk=workplace.id %}"
+           title="Edit workplace"
+        >
+          <i class="material-icons">edit</i>
+        </a>
+        <a class="btn btn-danger btn-sm"
+           href="{% url 'production:workplace-delete' pk=workplace.id %}"
+           title="Delete Workplace"
+        >
+          <i class="material-icons">delete</i>
+        </a>
+      </div>
+    {% endif %}
+  </div>
+  <hr>
+  <div class="row">
+    <div class="col-sm-12">
+      <div>
+        {% if print_queues %}
+          <div class="card card-plain">
+            <div class="card-header card-header-tabs card-header-primary rounded">
+              <div class="nav-tabs-navigation">
+                <div class="nav-tabs-wrapper">
+                  <div class="d-flex align-items-center justify-content-between">
+                    <h1 class="nav-tabs-title">Print Queues:</h1>
+                    {% if user in workers or user.is_staff and printers.exists %}
+                      <ul class="nav nav-tabs" data-tabs="tabs">
+                        <li class="nav-item">
+                          <a class="nav-link active"
+                             href="{% url 'production:print-queue-create' pk=workplace.id %}"
+                             title="Add print queue"
+                          >
+                            <i class="material-icons">add</i>
+                          </a>
+                        </li>
+                      </ul>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="table-responsive h4">
+                <table class="table text-center">
+                  <thead class="text-primary">
+                  <tr>
+                    <th>ID</th>
+                    <th>Material</th>
+                    <th>Creation Time</th>
+                    <th>Square meters</th>
+                    <th>Winding left</th>
+                    <th>Status</th>
+                    <th>Manage</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  {% for print_queue in print_queues %}
+                    <tr>
+                      <td>
+                        <a class="page-link text-primary"
+                           href="{% url 'production:print-queue-detail' pk=print_queue.id %}">{{ print_queue.id }}</a>
+                      </td>
+                      <td>{{ print_queue.material.name }}</td>
+                      <td>{{ print_queue.creation_time }}</td>
+                      <td>{{ print_queue.summary.total_area }} m²</td>
+                      <td>{{ print_queue.summary.winding_left }} m²</td>
+                      <td>{{ print_queue.get_status_display }}</td>
+                      <td>
+                        {% if user.is_staff or user in workers %}
+                          <div>
+                            {% if print_queue.is_printable %}
+                              <a href="#"
+                                 class="btn btn-success btn-sm"
+                                 title="Open in printer"
+                              ><i class="material-icons">print</i>
+                              </a>
+                            {% endif %}
+                            {% if print_queue.is_editable %}
+                              <a href="{% url "production:print-queue-update" pk=print_queue.id %}"
+                                 class="btn btn-social btn-sm"
+                                 title="Edit print queue"
+                              ><i class="material-icons">edit</i>
+                              </a>
+                            {% endif %}
+                          </div>
+                        {% endif %}
+                      </td>
+                    </tr>
+                  {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        {% else %}
+          <div class="d-flex align-items-center justify-content-between">
+            <h2 class="text-primary mr-3"> There are no print queues yet! </h2>
+            {% if printers and user.is_staff or user in workers %}
+              <a class="btn btn-primary btn-sm"
+                 href="{% url 'production:print-queue-create' pk=workplace.id %}"
+                 title="Add print queue"
+              >
+                <i class="material-icons">add</i>
+              </a>
+            {% endif %}
+          </div>
+        {% endif %}
+      </div>
+      <hr>
+      <div>
+        {% if printers %}
+          <div class="card card-plain">
+            <div class="card-header card-header-tabs card-header-primary rounded">
+              <div class="nav-tabs-navigation">
+                <div class="nav-tabs-wrapper">
+                  <div class="d-flex align-items-center justify-content-between">
+                    <h1 class="nav-tabs-title">Printers:</h1>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="table-responsive h4">
+                <table class="table">
+                  <thead class="text-primary">
+                  <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Materials</th>
+                    <th>Status</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  {% for printer in printers %}
+                    <tr>
+                      <td>{{ printer.id }}</td>
+                      <td>
+                        <a href="{% url 'production:printer-detail' pk=printer.id %}"
+                           class="page-link text-primary"
+                        >
+                          {{ printer.full_name }}
+                        </a>
+                      </td>
+                      
+                      <td>
+                        <ul class="list-unstyled">
+                          {% for material in printer.materials.all %}
+                            <li>
+                              <a class="text-primary" href="{{ material.get_absolute_url }}">
+                                {{ material.name }}
+                              </a>
+                            </li>
+                          {% endfor %}
+                        </ul>
+                      </td>
+                      <td>{{ printer.get_status_display }}</td>
+                    </tr>
+                  {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        {% else %}
+          <h2 class="text-primary">There are no printers yet!</h2>
+        {% endif %}
+      </div>
+      <hr>
+      <div>
+        {% if workers %}
+          <div class="card card-plain">
+            <div class="card-header card-header-tabs card-header-primary rounded">
+              <div class="nav-tabs-navigation">
+                <div class="nav-tabs-wrapper">
+                  <div class="d-flex align-items-center justify-content-between">
+                    <h1 class="nav-tabs-title">Workers:</h1>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="table-responsive h4">
+                <table class="table">
+                  <thead class=" text-primary">
+                  <tr>
+                    <th>ID</th>
+                    <th>Username</th>
+                    <th>Full name</th>
+                    <th>Phone number</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  {% for worker in workers %}
+                    <tr>
+                      <td>{{ worker.id }}</td>
+                      <td>
+                        <a href="{{ worker.get_absolute_url }}"
+                           class="page-link text-primary"
+                        >
+                          {{ worker.username }}
+                        </a>
+                      </td>
+                      <td>{{ worker.first_name }} {{ worker.last_name }}</td>
+                      <td>{{ worker.phone_number }}</td>
+                    </tr>
+                  {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        {% else %}
+          <h2 class="text-primary"> There are no workers yet! </h2>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+{% endblock %}

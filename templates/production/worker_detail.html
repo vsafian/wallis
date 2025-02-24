@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block content %}
+  <hr>
+  <div class="d-flex justify-content-between align-items-center">
+    <h1>
+      Username: {{ worker.username }}
+    </h1>
+    {% if worker.id == user.id or user.is_staff %}
+      <a class="btn btn-danger btn-sm"
+         href="{% url 'production:worker-delete' pk=worker.pk %}"
+         title="Delete Profile"
+      >
+        <i class="material-icons">delete</i>
+      </a>
+    {% endif %}
+  </div>
+  <hr>
+  <div>
+    <h3>Personal information:</h3>
+    <br>
+    <p><strong>First name:</strong> {{ worker.first_name }}</p>
+    <p><strong>Last name:</strong> {{ worker.last_name }}</p>
+    <div class="d-flex  align-items-baseline justify-content-between">
+      <p><strong>Phone number:</strong> {{ worker.phone_number }}</p>
+      {% if worker.id == user.id or user.is_staff %}
+        <a href="{% url 'production:worker-phone' pk=worker.pk %}" class="btn btn-primary btn-sm">
+          Update phone number
+        </a>
+      {% endif %}
+    </div>
+  </div>
+  <hr>
+  <div>
+    <h3>Production information:</h3>
+    <br>
+    <p><strong>Administrator:</strong> {{ worker.is_staff }}</p>
+    <p><strong>Workplace:</strong> {{ worker.workplace }}</p>
+  </div>
+{% endblock %}

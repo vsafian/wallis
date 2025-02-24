@@ -1,0 +1,80 @@
+<div class="sidebar" data-color="purple" data-background-color="white" data-image="/static/assets/img/sidebar-1.jpg">
+  <div class="sidebar-wrapper">
+    <ul class="nav">
+      <li class="nav-item {% if 'index' in segment %} active {% endif %}">
+        <a class="nav-link" href="/">
+          <i class="material-icons">store</i>
+          <p>Home</p>
+        </a>
+        <hr>
+      </li>
+      <li class="nav-item {% if 'page-user' in segment %} active {% endif %}">
+        <a class="nav-link" href="{{ user.get_absolute_url }}">
+          <i class="material-icons">person</i>
+          <p>User: {{ user.get_username }}</p>
+        </a>
+      </li>
+      <li class="nav-item {% if 'ui-notifications' in segment %} active {% endif %}">
+        <form class="nav-link" method="POST" action="{% url 'logout' %}">
+          {% csrf_token %}
+          <label class="nav-form-label">
+            <i class="material-icons">directions_run</i>
+            <input class="nav-form-input" type="submit" value="Logout">
+          </label>
+        </form>
+      </li>
+    </ul>
+    <hr>
+    {% if user.workplace %}
+      <ul class="nav">
+        <li class="nav-item {% if 'ui-tables' in segment %} active {% endif %}">
+          <a class="nav-link" href="{% url 'production:workplace-detail' pk=user.workplace.id %}">
+            <i class="material-icons">add</i>
+            <p>{{ user.workplace.name }}</p>
+          </a>
+        </li>
+      </ul>
+      <hr>
+    {% endif %}
+    <ul class="nav">
+      <li class="nav-item {% if 'ui-tables' in segment %} active {% endif %}">
+        <a class="nav-link" href="{% url 'production:order-list' %}">
+          <i class="material-icons">library_books</i>
+          <p>Orders</p>
+        </a>
+      </li>
+
+      <li class="nav-item {% if 'ui-tables' in segment %} active {% endif %}">
+        <a class="nav-link" href="{% url 'production:worker-list' %}">
+          <i class="material-icons">people</i>
+          <p>Workers</p>
+        </a>
+      </li>
+      <li class="nav-item {% if 'ui-tables' in segment %} active {% endif %}">
+        <a class="nav-link" href="{% url 'production:workplace-list' %}">
+          <i class="material-icons">work</i>
+          <p>Workplaces</p>
+        </a>
+      </li>
+      <li class="nav-item {% if 'ui-tables' in segment %} active {% endif %}">
+        <a class="nav-link" href="{% url 'production:material-list' %}">
+          <i class="material-icons">bubble_chart</i>
+          <p>Materials</p>
+        </a>
+      </li>
+      <li class="nav-item {% if 'ui-tables' in segment %} active {% endif %}">
+        <a class="nav-link" href="{% url 'production:printer-list' %}">
+          <i class="material-icons">print</i>
+          <p>Printers</p>
+        </a>
+      </li>
+      <li class="nav-item {% if 'ui-tables' in segment %} active {% endif %}">
+        <a class="nav-link" href="{% url 'production:print-queue-list' %}">
+          <i class="material-icons">tabs</i>
+          <p>Print Queues</p>
+        </a>
+      </li>
+    </ul>
+  </div>
+</div>
+

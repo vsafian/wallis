@@ -1,0 +1,112 @@
+[
+    {
+        "model": "production.material",
+        "pk": 1,
+        "fields": {
+            "name": "Vinyl",
+            "type": "Matte",
+            "roll_width": 1.34,
+            "winding": 87,
+            "density": 178
+        }
+    },
+    {
+        "model": "production.material",
+        "pk": 2,
+        "fields": {
+            "name": "Canvas",
+            "type": "Glossy",
+            "roll_width": 1.07,
+            "winding": 49,
+            "density": 173
+        }
+    },
+    {
+        "model": "production.material",
+        "pk": 3,
+        "fields": {
+            "name": "Paper",
+            "type": "Glossy",
+            "roll_width": 1.45,
+            "winding": 44,
+            "density": 196
+        }
+    },
+    {
+        "model": "production.material",
+        "pk": 4,
+        "fields": {
+            "name": "Silk",
+            "type": "Matte",
+            "roll_width": 1.46,
+            "winding": 41,
+            "density": 259
+        }
+    },
+    {
+        "model": "production.material",
+        "pk": 5,
+        "fields": {
+            "name": "Linen",
+            "type": "Glossy",
+            "roll_width": 1.45,
+            "winding": 117,
+            "density": 136
+        }
+    },
+    {
+        "model": "production.material",
+        "pk": 6,
+        "fields": {
+            "name": "Textile",
+            "type": "Matte",
+            "roll_width": 1.34,
+            "winding": 97,
+            "density": 280
+        }
+    },
+    {
+        "model": "production.material",
+        "pk": 7,
+        "fields": {
+            "name": "PVC",
+            "type": "Glossy",
+            "roll_width": 1.28,
+            "winding": 135,
+            "density": 155
+        }
+    },
+    {
+        "model": "production.material",
+        "pk": 8,
+        "fields": {
+            "name": "Fiberglass",
+            "type": "Matte",
+            "roll_width": 1.27,
+            "winding": 45,
+            "density": 265
+        }
+    },
+    {
+        "model": "production.material",
+        "pk": 9,
+        "fields": {
+            "name": "Nonwoven",
+            "type": "Glossy",
+            "roll_width": 1.31,
+            "winding": 85,
+            "density": 132
+        }
+    },
+    {
+        "model": "production.material",
+        "pk": 10,
+        "fields": {
+            "name": "Metallic",
+            "type": "Glossy",
+            "roll_width": 1.5,
+            "winding": 94,
+            "density": 285
+        }
+    }
+]
