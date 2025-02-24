@@ -78,21 +78,17 @@ orders.json
 printers.json
 workers.json
 workplaces.json
-superuser.json
 
-(!) Important: Load superuser.json first if you want to use pre-configured admin credentials and correct load workers fixture.
+
 
 The recommended order of fixture loading:
 1. workplaces.json
 2. materials.json
 3. printers.json
 4. orders.json
-5. superuser.json
-6. workers.json
+5. workers.json
 
-🔑 Superuser Credentials:
-* Username: `admin.user`
-* Password: `1qazcde3`
+(!) Important: You can log in as any worker from workers fixture. To do this, use the username and password from "unhashed_password" key.
 
 ---
 

@@ -3,7 +3,10 @@ import datetime
 from string import ascii_letters
 from time import sleep
 
+from django.contrib.auth.hashers import make_password
+
 from django.utils import timezone
+
 
 import init_django_orm  # noqa F401
 
@@ -39,7 +42,8 @@ def write_fixture(fixture_name: str, data: list[dict]) -> None:
         dump(data, file, indent=4, ensure_ascii=False)
 
 
-def workers_create(workplaces: bool):
+def workers_create(workplaces: bool,
+                   first_super: bool = False):
     letters = ascii_letters[: len(ascii_letters) // 2]
     model_name = model_code(Worker)
     user_usernames = ["Can", "Eps", "Bro", "Rick", "Zero", "Lun"]
@@ -51,27 +55,30 @@ def workers_create(workplaces: bool):
         username = random.choice(user_usernames) + "".join(unique_username_part)
         first_name = random.choice(user_first_names)
         phone_number = "+380" + "".join(str(random.choice(range(9))) for _ in range(9))
+        password = f"{username}&{phone_number[-3::]}{random.choice(["@#$%^"])}"
+        super_check = True if index == 0 and first_super else False
         if workplaces:
             workplace = random.choice(range(1, WORKPLACES_COUNT + 1))
         worker = {
             "model": model_name,
-            "pk": index + 2,
+            "pk": index + 1,
             "fields": {
-                "password": f"{username}{phone_number}{random.choice("@#$!^")}",
+                "password": make_password(password),
                 "last_login": str(datetime.datetime.now()),
-                "is_superuser": False,
+                "is_superuser": super_check,
                 "username": username,
                 "first_name": first_name,
                 "last_name": username,
                 "email": f"{first_name}_{username}@email.com",
-                "is_staff": False,
-                "is_active": False,
+                "is_staff": super_check,
+                "is_active": True,
                 "date_joined": "2022-08-08T13:58:29Z",
                 "phone_number": phone_number,
                 "workplace": workplace,
                 "groups": [],
                 "user_permissions": []
-            }
+            },
+            "unhashed_password": password,
         }
         workers.append(worker)
     write_fixture("workers", workers)
@@ -187,5 +194,4 @@ def orders_to_print_create():
    write_fixture("orders", orders)
 
 if __name__ == "__main__":
-    #pass
-    orders_to_print_create()
+    pass
