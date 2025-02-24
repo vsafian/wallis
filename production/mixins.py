@@ -88,7 +88,7 @@ class ListViewSearchMixin(generic.ListView):
     queryset: QuerySet = None
 
     def dispatch(self, request, *args, **kwargs):
-        fields = ["search_form", "search_field", "queryset"]
+        fields = ["search_form", "search_field"]
         for field_name in fields:
             field = getattr(self, field_name, None)
             if not field:
