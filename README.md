@@ -48,10 +48,19 @@ Wallis aims to replicate real-world printing workflow as closely as possible.
 
 ### 🛠️ Tech Stack
 - **Django 4.x – Backend framework**
-- **SQLite3 – Database**
+- **SQLite3 / PostgreSQL – Databases**
 - **Bootstrap 5 – Frontend styling**
 - **Chartist.js – Data visualization**
 - **Django Filters – Advanced filtering**
+---
+
+## 👨🏻‍💻 Preview
+You can view a live preview on render.com at the following link: https://wallis.onrender.com
+
+### Test User Credentials:
+- **Username:** `Rickylar`
+- **Password:** `Rickylar&138@#$%^`
+
 ---
 
 ## 🚀 Installation Guide
@@ -78,7 +87,6 @@ orders.json
 printers.json
 workers.json
 workplaces.json
-
 
 
 The recommended order of fixture loading:
